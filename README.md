@@ -4,6 +4,8 @@ A local Windows focus app. Create executable blocklists, start timed sessions, a
 
 ## Run
 
+For a guided installation, download `FocusFence-1.0.0-Setup-x64.exe` from the release page. It bundles the .NET runtime, creates a Start menu shortcut, offers a desktop shortcut, and registers FocusFence in Windows Installed apps. Run a newer installer to upgrade; exit FocusFence from its tray menu first. Uninstall preserves your settings and PIN. Restore any administrator-applied account policy inside FocusFence before uninstalling; uninstall does not change Windows policies. The installer is unsigned.
+
 Download the Windows ZIP from [GitHub Releases](https://github.com/tannpv/FocusFence/releases/latest), extract the entire ZIP to a folder, and open `FocusFence.App.exe`. The repository and its downloads are private. Close an existing FocusFence instance from its tray menu before replacing its application files. Settings and PIN remain in `%LOCALAPPDATA%\FocusFence`.
 
 In **Apps**, select **My current account** to close disabled executables while FocusFence is running, including when minimized to the tray. Enabling an app removes it from that monitoring list. The managed-account list is separate and requires administrator review and application before Windows enforces it. Current-account blocking does not persist after exiting FocusFence and can be bypassed by an administrator.
@@ -15,6 +17,8 @@ dotnet run --project src/FocusFence.App
 ```
 
 ## Build and verify
+
+To build the installer, install Inno Setup 6 and run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-Installer.ps1`. The build reads the app version from `Properties/Version.props` and writes a self-contained Windows x64 installer and SHA-256 checksum to `artifacts/installer/output`.
 
 ```powershell
 dotnet build src/FocusFence.App -c Release
