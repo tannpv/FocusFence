@@ -15,6 +15,8 @@ public sealed class JsonStateStore(string path) : IStateStore
             throw new InvalidDataException("PIN settings are invalid. Restore a valid settings backup.");
         if (state.ManagedDisabledApps is null || state.ManagedDisabledApps.Any(a => a is null || string.IsNullOrWhiteSpace(a.Path)))
             throw new InvalidDataException("Managed app settings contain an invalid executable.");
+        if (state.LocalDisabledApps is null || state.LocalDisabledApps.Any(a => a is null || string.IsNullOrWhiteSpace(a.Path)))
+            throw new InvalidDataException("Current-account app settings contain an invalid executable.");
         if (state.ManagedDraft is null || state.ManagedDraft.AccountName is null)
             throw new InvalidDataException("Managed account draft is invalid.");
         if (state.Blocklists is null || state.Blocklists.Any(x => x is null || x.Apps is null || x.Apps.Any(a => a is null || string.IsNullOrWhiteSpace(a.Path))) ||

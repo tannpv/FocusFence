@@ -1,12 +1,32 @@
 param([string]$OutputDirectory = (Join-Path $PSScriptRoot '..\artifacts\policy-tests'), [string]$TargetAccount)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\PolicyBuilder.ps1')
+. (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\PolicyDetection.ps1')
+. (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\RequestParser.ps1')
 $script:checks = 0
 function Assert($condition, [string]$message) {
     if (-not $condition) { throw "FAIL: $message" }
     $script:checks++; Write-Output "PASS: $message"
 }
 $sid = if ($TargetAccount) { (Get-LocalUser -Name $TargetAccount).SID.Value } else { [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
+function Encode-Request([string]$json) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json)) }
+$singlePath = @(ConvertFrom-BlockedExecutableRequest (Encode-Request '["C:\\Example App\\player.exe"]'))
+Assert ($singlePath.Count -eq 1 -and $singlePath[0] -is [string] -and $singlePath[0] -eq 'C:\Example App\player.exe') 'Single app request decodes to a path string in Windows PowerShell'
+$multiplePaths = @(ConvertFrom-BlockedExecutableRequest (Encode-Request '["C:\\Example\\one.exe","C:\\Example\\two.exe"]'))
+Assert ($multiplePaths.Count -eq 2 -and $multiplePaths[1] -eq 'C:\Example\two.exe') 'Multiple app request preserves each path'
+Assert (@(ConvertFrom-BlockedExecutableRequest (Encode-Request '[]')).Count -eq 0) 'Empty app request remains empty'
+foreach ($invalidJson in @('[null]', '[["C:\\Example\\one.exe"]]', '[42]', '"C:\\Example\\one.exe"', '["relative.exe"]')) {
+    $rejected = $false
+    try { $null = ConvertFrom-BlockedExecutableRequest (Encode-Request $invalidJson) } catch { $rejected = $true }
+    Assert $rejected 'Malformed individual app request is rejected'
+}
+Assert (-not (Test-SrpConfigurationContent @{} 0)) 'Empty SRP key does not indicate configured restrictions'
+Assert (-not (Test-SrpConfigurationContent @{ authenticodeenabled = 0 } 0)) 'Disabled certificate setting alone does not indicate configured restrictions'
+Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = 0 } 1) 'SRP subkeys still prevent applying policy'
+Assert (Test-SrpConfigurationContent @{ DefaultLevel = 262144 } 0) 'SRP enforcement configuration still prevents applying policy'
+Assert (Test-SrpConfigurationContent @{ UnknownSetting = 0 } 0) 'Unknown SRP settings are rejected conservatively'
+Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = 1 } 0) 'Enabled certificate setting requires review'
+Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = '0' } 0) 'Unexpected registry value types require review'
 $windows = [Environment]::GetFolderPath('Windows')
 $programs = @([Environment]::GetFolderPath('ProgramFiles'))
 $packages = @([pscustomobject]@{ Name = 'Example.App'; Publisher = 'CN=Example & Company' })

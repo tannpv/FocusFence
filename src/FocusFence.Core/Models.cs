@@ -25,6 +25,8 @@ public sealed class AppState
     public Dictionary<Guid, DateTimeOffset> SkippedSchedules { get; set; } = [];
     public PinProfile? Pin { get; set; }
     public List<AppTarget> ManagedDisabledApps { get; set; } = [];
+    public List<AppTarget> LocalDisabledApps { get; set; } = [];
+    public bool UseCurrentAccount { get; set; }
     public ManagedPolicyDraft ManagedDraft { get; set; } = new();
 }
 

@@ -10,6 +10,8 @@ $ErrorActionPreference = 'Stop'
 $ExitCodes = @{ Applied = 10; Restored = 11; Cancelled = 12; NoPolicyToRestore = 13; RestoredServiceRunning = 14 }
 Set-StrictMode -Version Latest
 . (Join-Path $PSScriptRoot 'PolicyBuilder.ps1')
+. (Join-Path $PSScriptRoot 'PolicyDetection.ps1')
+. (Join-Path $PSScriptRoot 'RequestParser.ps1')
 Add-Type -AssemblyName System.Windows.Forms
 
 function Show-Result([string]$message) {
@@ -73,9 +75,10 @@ try {
     if ($Action -ne 'Restore' -and (-not $account.Enabled -or $sid -in $administrators -or $sid -eq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value)) { throw 'Select a different, enabled standard account. Administrator and current accounts are not supported.' }
     if ((Get-CimInstance Win32_ComputerSystem).PartOfDomain) { throw 'Domain-managed PCs require an administrator policy review outside this helper.' }
     if ($Action -ne 'Restore') {
-        foreach ($existingPolicy in @('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers', "Registry::HKEY_USERS\$sid\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers", 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\AppLocker')) {
-            if (Test-Path -LiteralPath $existingPolicy) { throw 'Existing Software Restriction Policy or MDM AppLocker configuration was detected. Review it with an administrator before using this helper.' }
+        foreach ($existingPolicy in @('HKLM:\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers', "Registry::HKEY_USERS\$sid\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers")) {
+            if (Test-ExistingSrpConfiguration -Path $existingPolicy) { throw "Existing Software Restriction Policy configuration was detected at $existingPolicy. Review it with an administrator before using this helper." }
         }
+        if (Test-Path -LiteralPath 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\AppLocker' -ErrorAction Stop) { throw 'Existing MDM AppLocker configuration was detected. Review it with an administrator before using this helper.' }
     }
     $lock = New-Object System.Threading.Mutex($false, 'Global\FocusFence.ManagedPolicy')
     if (-not $lock.WaitOne(0)) { throw 'Another policy operation is in progress.' }
@@ -133,17 +136,13 @@ try {
 
     $blockedExecutables = @()
     if ($BlockedExecutablesBase64) {
-        if ($BlockedExecutablesBase64.Length -gt 20000) { throw 'The individual app request is too large.' }
-        $blockedExecutables = @([Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($BlockedExecutablesBase64)) | ConvertFrom-Json)
-        if ($blockedExecutables.Count -gt 100) { throw 'Select at most 100 individual apps.' }
+        $blockedExecutables = @(ConvertFrom-BlockedExecutableRequest $BlockedExecutablesBase64)
         foreach ($path in $blockedExecutables) {
-            if ($path -isnot [string] -or -not [IO.Path]::IsPathRooted($path) -or $path -notmatch '\.exe$' -or -not (Test-Path -LiteralPath $path -PathType Leaf)) { throw 'An individual app path is invalid or no longer exists. Refresh the app list.' }
+            if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "The individual app executable cannot be found: $path. Refresh the app list." }
             if ([IO.Path]::GetFullPath($path).StartsWith($env:SystemRoot.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Individual app switches cannot target Windows system executables.' }
         }
     }
     if (-not $RestrictNewApps -and -not $BlockUninstallers -and $blockedExecutables.Count -eq 0) { throw 'Select a restriction or disable an app, or use Restore.' }
-    $profile = Get-ItemProperty -LiteralPath "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$sid"
-    $profilePath = [Environment]::ExpandEnvironmentVariables($profile.ProfileImagePath)
     $packages = @()
     if ($RestrictNewApps) {
         $packages = @(Get-AppxPackage -User $sid | Select-Object Name, Publisher -Unique)
@@ -152,6 +151,11 @@ try {
     $uninstallers = @(); $unresolved = @()
     if ($BlockUninstallers) {
         if (-not (Test-Path "Registry::HKEY_USERS\$sid")) { throw 'Sign into the standard account and switch back to the administrator account before inventorying its uninstallers.' }
+        $profileKey = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$sid"
+        if (-not (Test-Path -LiteralPath $profileKey)) { throw 'Sign into the standard account once to create its Windows profile before inventorying uninstallers.' }
+        $profile = Get-ItemProperty -LiteralPath $profileKey
+        if (-not $profile.PSObject.Properties['ProfileImagePath'] -or [string]::IsNullOrWhiteSpace($profile.ProfileImagePath)) { throw 'The selected account has no usable Windows profile path. Sign into it before inventorying uninstallers.' }
+        $profilePath = [Environment]::ExpandEnvironmentVariables($profile.ProfileImagePath)
         $locations = @('HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall', 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall', "Registry::HKEY_USERS\$sid\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall")
         foreach ($location in $locations) {
             if (-not (Test-Path -LiteralPath $location)) { continue }
@@ -220,7 +224,14 @@ try {
     Show-Result "Policy applied for $AccountName. Sign out of that account and sign back in before testing. Review AppLocker event logs for enforcement results. Use Restore in FocusFence to remove this policy. Backup: $journalPath"
     exit $ExitCodes.Applied
 } catch {
-    [void][System.Windows.Forms.MessageBox]::Show($_.Exception.Message, 'FocusFence policy operation failed', 'OK', 'Error')
+    $operationError = $_
+    try {
+        $diagnosticDirectory = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'FocusFence'
+        [void][IO.Directory]::CreateDirectory($diagnosticDirectory)
+        [pscustomobject]@{ Time = [DateTimeOffset]::Now.ToString('o'); Action = $Action; Account = $AccountName; Message = $operationError.Exception.Message; Location = $operationError.InvocationInfo.PositionMessage } |
+            ConvertTo-Json | Set-Content -LiteralPath (Join-Path $diagnosticDirectory 'admin-last-error.json') -Encoding UTF8
+    } catch { }
+    [void][System.Windows.Forms.MessageBox]::Show($operationError.Exception.Message, 'FocusFence policy operation failed', 'OK', 'Error')
     exit 1
 } finally {
     if (Get-Variable lock -ErrorAction SilentlyContinue) { $lock.Dispose() }

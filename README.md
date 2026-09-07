@@ -4,6 +4,10 @@ A local Windows focus app. Create executable blocklists, start timed sessions, a
 
 ## Run
 
+Download the Windows ZIP from [GitHub Releases](https://github.com/tannpv/FocusFence/releases/latest), extract the entire ZIP to a folder, and open `FocusFence.App.exe`. The repository and its downloads are private. Close an existing FocusFence instance from its tray menu before replacing its application files. Settings and PIN remain in `%LOCALAPPDATA%\FocusFence`.
+
+In **Apps**, select **My current account** to close disabled executables while FocusFence is running, including when minimized to the tray. Enabling an app removes it from that monitoring list. The managed-account list is separate and requires administrator review and application before Windows enforces it. Current-account blocking does not persist after exiting FocusFence and can be bypassed by an administrator.
+
 Requires Windows and the .NET 8 Desktop Runtime (the installed .NET 8 SDK also works).
 
 ```powershell

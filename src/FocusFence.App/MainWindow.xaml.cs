@@ -243,6 +243,12 @@ public partial class MainWindow : Window
                 tray.ShowBalloonTip(Defaults.NotificationMilliseconds, "Scheduled focus", "Scheduled hours are active. Selected apps are being blocked.", Forms.ToolTipIcon.Info);
             wasBlocking = active is not null;
             UpdateSession();
+            var localApps = state.LocalDisabledApps.Where(a => policy.GetRejection(a.Path) is null).ToArray();
+            if (localApps.Length > 0)
+            {
+                var localErrors = await Task.Run(() => monitor.Block(localApps, DateTimeOffset.MaxValue));
+                if (localErrors.Count > 0) Status.Text = string.Join(" ", localErrors);
+            }
             if (active is not null)
             {
                 var errors = await Task.Run(() => monitor.Block(active.Apps, active.EndsAt));
