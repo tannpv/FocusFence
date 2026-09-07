@@ -1,0 +1,41 @@
+<Window x:Class="FocusFence.App.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FocusFence.App" Title="FocusFence" Icon="/FocusFence.App;component/Assets/FocusFence.ico" Width="920" Height="720" MinWidth="760" MinHeight="620" Background="#F4F6F2" Foreground="#20372F" WindowStartupLocation="CenterScreen">
+ <Window.Resources><local:ExecutableIconConverter x:Key="ExecutableIcon"/></Window.Resources>
+ <Grid Margin="32">
+  <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <DockPanel Margin="0,0,0,24"><Button x:Name="LockButton" DockPanel.Dock="Right" Content="Set PIN" Click="LockOrConfigure" VerticalAlignment="Top"/><StackPanel><TextBlock Text="FocusFence" FontSize="30" FontWeight="Bold"/><TextBlock Text="Make room for what matters." FontSize="15" Margin="0,6,0,0"/></StackPanel></DockPanel>
+  <TabControl x:Name="Pages" Grid.Row="1" Background="White" BorderThickness="0" Padding="20">
+   <TabItem Header="  Apps  "><local:AppAccessEditor x:Name="AppAccess"/></TabItem>
+   <TabItem Header="  Focus  "><StackPanel Margin="12">
+    <TextBlock Text="YOUR FOCUS SESSION" FontWeight="SemiBold" Margin="0,12"/>
+    <TextBlock x:Name="TimerText" Text="Ready when you are" FontSize="40" Margin="0,12"/>
+    <TextBlock x:Name="SessionText" Text="Choose a blocklist, then take back your attention." TextWrapping="Wrap"/>
+    <TextBlock Text="Blocklist" Margin="0,24,0,6"/><ComboBox x:Name="Lists" DisplayMemberPath="Name" SelectionChanged="SelectList" Padding="10"/>
+    <StackPanel Orientation="Horizontal" Margin="0,16,0,0"><TextBox x:Name="Minutes" Width="90" AutomationProperties.Name="Session duration in minutes"/><TextBlock Text="minutes" VerticalAlignment="Center"/></StackPanel>
+    <WrapPanel><Button x:Name="StartButton" Content="Start focus session" Click="StartSession"/><Button x:Name="UnlockButton" Content="Emergency unlock" Click="UnlockSession" IsEnabled="False"/></WrapPanel>
+    <TextBlock Text="Selected apps will be closed while focus is active. Save your work first.&#10;Closing this window keeps FocusFence running in the tray." TextWrapping="Wrap" Margin="0,24,0,0" Foreground="#62736A"/>
+   </StackPanel></TabItem>
+   <TabItem Header="  Blocked apps  "><Grid Margin="12">
+    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <TextBlock Text="Edit the blocklist selected on the Focus tab." Margin="0,8"/>
+    <WrapPanel Grid.Row="1"><TextBox x:Name="ListName" Width="180" AutomationProperties.Name="Blocklist name"/><Button Content="New list" Click="NewList"/><Button Content="Rename" Click="RenameList"/><Button Content="Delete list" Click="DeleteList"/></WrapPanel>
+    <ListBox Grid.Row="2" x:Name="Targets"><ListBox.ItemTemplate><DataTemplate><DockPanel Margin="8" ToolTip="{Binding Path}"><Image Source="{Binding Path, Converter={StaticResource ExecutableIcon}}" Width="24" Height="24" Margin="0,0,12,0"/><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding Path}" FontSize="11" Foreground="#62736A" TextTrimming="CharacterEllipsis"/></StackPanel></DockPanel></DataTemplate></ListBox.ItemTemplate></ListBox>
+    <WrapPanel Grid.Row="3"><Button Content="Browse executable…" Click="BrowseApp"/><Button Content="Remove selected" Click="RemoveApp"/><Button Content="Refresh running apps" Click="RefreshApps"/></WrapPanel>
+    <DockPanel Grid.Row="4"><Button DockPanel.Dock="Right" Content="Add running app" Click="AddRunning"/><ComboBox x:Name="Running" DisplayMemberPath="Name" Padding="8" Margin="0,6,8,6" AutomationProperties.Name="Running applications"/></DockPanel>
+   </Grid></TabItem>
+   <TabItem Header="  Schedules  "><local:ScheduleEditor x:Name="Schedules"/></TabItem>
+   <TabItem x:Name="ManagedAccountTab" Header="  Managed account  "><local:ManagedAccountEditor x:Name="ManagedAccount"/></TabItem>
+   <TabItem Header="  Settings  "><StackPanel Margin="12">
+    <Button Content="Set / change PIN" Click="ConfigurePin" HorizontalAlignment="Left"/>
+    <CheckBox x:Name="StartupEnabled" Content="Start FocusFence at Windows sign-in" Margin="0,12"/>
+    <TextBlock Text="Starts in the tray and automatically resumes active focus sessions and schedules. Selected apps may close without a prompt. Keep the app in its current folder." TextWrapping="Wrap"/>
+    <Button x:Name="SaveStartupButton" Content="Apply startup preference" Click="SaveStartup" HorizontalAlignment="Left"/>
+    <TextBlock Text="Emergency unlock delay (seconds)" Margin="0,12"/>
+    <TextBox x:Name="Delay" Width="100" HorizontalAlignment="Left" AutomationProperties.Name="Emergency unlock delay in seconds"/>
+    <Button Content="Save settings" Click="SaveSettings" HorizontalAlignment="Left"/>
+    <TextBlock Text="Settings are stored locally in your Windows profile.&#10;This personal focus tool can be bypassed by exiting it.&#10;Windows system apps and FocusFence itself cannot be selected.&#10;Apps running with higher privileges may not be blocked." TextWrapping="Wrap" Margin="0,24"/>
+   </StackPanel></TabItem>
+  </TabControl>
+  <Border x:Name="LockedCover" Grid.Row="1" Background="#F4F6F2" Visibility="Collapsed"><StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="460"><TextBlock Text="FocusFence is locked" FontSize="28" FontWeight="SemiBold"/><TextBlock Text="Enter your PIN to view apps and change settings. Blocking remains active." TextWrapping="Wrap" Margin="0,16"/><Button x:Name="SignInButton" Content="Sign in with PIN" Click="SignIn" HorizontalAlignment="Left"/></StackPanel></Border>
+  <TextBlock Grid.Row="2" x:Name="Status" Text="Ready" Margin="0,16,0,0" TextWrapping="Wrap" Foreground="#62736A"/>
+ </Grid>
+</Window>

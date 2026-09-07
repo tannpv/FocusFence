@@ -1,0 +1,20 @@
+<UserControl x:Class="FocusFence.App.ScheduleEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <DockPanel Margin="12">
+  <WrapPanel DockPanel.Dock="Bottom"><Button x:Name="SaveScheduleButton" Content="Save schedule" Click="SaveSchedule"/><Button Content="Delete schedule" Click="DeleteSchedule"/></WrapPanel>
+  <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel>
+  <TextBlock Text="Build a regular focus routine" FontSize="22" FontWeight="SemiBold" Margin="0,8"/>
+  <TextBlock Text="Schedules close selected apps automatically while FocusFence is running. Save your work before scheduled hours." TextWrapping="Wrap" Margin="0,0,0,12"/>
+  <DockPanel><Button DockPanel.Dock="Right" Content="New schedule" Click="NewSchedule"/><ComboBox x:Name="SavedSchedules" DisplayMemberPath="Name" SelectionChanged="SelectSchedule" Padding="8" Margin="0,6,8,6" AutomationProperties.Name="Saved schedules"/></DockPanel>
+  <TextBlock Text="Name"/><TextBox x:Name="ScheduleName" AutomationProperties.Name="Schedule name"/>
+  <TextBlock Text="Blocklist"/><ComboBox x:Name="ScheduleBlocklist" DisplayMemberPath="Name" Padding="8" Margin="0,6,8,6" AutomationProperties.Name="Scheduled blocklist"/>
+  <ItemsControl x:Name="Days" Margin="0,8"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel><ItemsControl.ItemTemplate><DataTemplate><CheckBox Content="{Binding Label}" IsChecked="{Binding Selected}" Margin="0,0,14,8"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+  <WrapPanel>
+   <StackPanel><TextBlock Text="Start (24-hour HH:mm)"/><TextBox x:Name="StartTime" Width="170" AutomationProperties.Name="Schedule start time"/></StackPanel>
+   <StackPanel><TextBlock Text="End (24-hour HH:mm)"/><TextBox x:Name="EndTime" Width="170" AutomationProperties.Name="Schedule end time"/></StackPanel>
+  </WrapPanel>
+  <TextBlock x:Name="ZoneLabel" TextWrapping="Wrap"/>
+  <TextBlock Text="An earlier end time means the following day. Days refer to when the schedule starts." TextWrapping="Wrap" Margin="0,6"/>
+  <CheckBox x:Name="ScheduleEnabled" Content="Enabled — block automatically during these hours" Margin="0,8"/>
+ </StackPanel></ScrollViewer>
+ </DockPanel>
+</UserControl>

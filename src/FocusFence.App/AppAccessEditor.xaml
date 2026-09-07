@@ -1,0 +1,10 @@
+<UserControl x:Class="FocusFence.App.AppAccessEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+  <StackPanel><TextBlock Text="Choose which apps are allowed" FontSize="22" FontWeight="SemiBold" Margin="0,8"/><TextBlock Text="Switch apps individually, then review and apply in Managed account. These switches are a saved draft until the administrator applies it. Other Windows policies can still restrict enabled apps." TextWrapping="Wrap"/></StackPanel>
+  <DockPanel Grid.Row="1" Margin="0,8"><Button Content="Refresh apps" Click="RefreshApps"/><Button Content="Browse executable…" Click="BrowseApp"/><TextBox x:Name="Search" TextChanged="SearchChanged" AutomationProperties.Name="Search applications" ToolTip="Search apps by name or path"/></DockPanel>
+  <ListBox x:Name="AppList" Grid.Row="2" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled"><ListBox.ItemTemplate><DataTemplate>
+   <DockPanel Margin="8"><Button DockPanel.Dock="Right" Content="{Binding ActionLabel}" IsEnabled="{Binding CanChange}" Click="ToggleApp" MinWidth="85"/><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold"/><TextBlock Text="{Binding Path}" FontSize="11" TextTrimming="CharacterEllipsis" ToolTip="{Binding Path}"/><TextBlock Text="{Binding Status}" Foreground="#62736A" TextWrapping="Wrap"/></StackPanel></DockPanel>
+  </DataTemplate></ListBox.ItemTemplate></ListBox>
+  <StackPanel Grid.Row="3"><DockPanel><Button x:Name="ReviewDraftButton" DockPanel.Dock="Right" Content="Review account draft →" Click="ReviewDraft"/><TextBlock x:Name="DraftSummary" VerticalAlignment="Center" TextWrapping="Wrap"/></DockPanel><TextBlock x:Name="Result" Text="Lists desktop apps visible to this account. Browse to add apps installed only for the managed user. Store apps are not listed here." TextWrapping="Wrap" Margin="0,6"/></StackPanel>
+ </Grid>
+</UserControl>

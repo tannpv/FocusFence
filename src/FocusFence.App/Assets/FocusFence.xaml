@@ -1,0 +1,5 @@
+<DrawingGroup xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <GeometryDrawing Brush="#173F35" Geometry="M 128,8 C 158,28 192,36 224,40 L 224,117 C 224,181 182,225 128,248 C 74,225 32,181 32,117 L 32,40 C 64,36 98,28 128,8 Z" />
+  <GeometryDrawing Brush="#68D6A0" Geometry="M 128,29 C 153,44 179,51 204,56 L 204,116 C 204,167 174,204 128,226 C 82,204 52,167 52,116 L 52,56 C 77,51 103,44 128,29 Z" />
+  <GeometryDrawing Brush="#173F35" Geometry="F1 M 79,90 L 91,78 L 103,90 L 103,179 L 79,166 Z M 116,73 L 128,61 L 140,73 L 140,196 L 128,203 L 116,196 Z M 153,90 L 165,78 L 177,90 L 177,166 L 153,179 Z M 70,111 L 186,111 L 186,132 L 70,132 Z" />
+</DrawingGroup>

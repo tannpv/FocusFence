@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+artifacts/
+.vs/
+.env
+.env.*
+!.env.example
+*.user
+*.suo
+*-log.txt

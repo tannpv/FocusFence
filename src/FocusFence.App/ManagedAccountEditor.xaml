@@ -1,0 +1,15 @@
+<UserControl x:Class="FocusFence.App.ManagedAccountEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <ScrollViewer VerticalScrollBarVisibility="Auto"><StackPanel Margin="12">
+  <TextBlock Text="Manage a standard account" FontSize="22" FontWeight="SemiBold" Margin="0,8"/>
+  <TextBlock Text="These Windows policies keep working when FocusFence is closed. Applying or restoring them requires an administrator." TextWrapping="Wrap" Margin="0,8"/>
+  <TextBlock Text="Local Windows username"/>
+  <TextBox x:Name="AccountName" AutomationProperties.Name="Managed local account name"/>
+  <CheckBox x:Name="RestrictNewApps" Content="Restrict new apps and installer packages" Margin="0,12,0,6"/>
+  <TextBlock Text="Allows desktop apps in Windows and Program Files. Blocks executables elsewhere, scripts, MSI packages, and new packaged-app identities. Existing per-user desktop apps may stop running." TextWrapping="Wrap"/>
+  <CheckBox x:Name="BlockUninstallers" Content="Block registered uninstaller programs" Margin="0,16,0,6"/>
+  <TextBlock Text="Blocks detected uninstaller executables and Windows Installer maintenance. Shared uninstallers can also disable the associated app. Review the exact list before applying." TextWrapping="Wrap"/>
+  <TextBlock Text="This cannot prevent every removal method, deletion of user-owned files, or changes performed with administrator credentials. It is not a security boundary. Built-in tools and installers inside allowed folders may provide other routes." TextWrapping="Wrap" Margin="0,16"/>
+  <WrapPanel><Button x:Name="SaveDraftButton" Content="Save draft" Click="SaveDraft"/><Button x:Name="ReviewButton" Content="Review and apply as administrator…" Click="Review"/><Button x:Name="RestoreButton" Content="Restore previous policy…" Click="Restore"/></WrapPanel>
+  <TextBlock x:Name="Result" Text="No policy changes are made until you confirm the administrator's preview." TextWrapping="Wrap" Margin="0,12"/>
+ </StackPanel></ScrollViewer>
+</UserControl>
