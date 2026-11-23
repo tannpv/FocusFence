@@ -109,10 +109,26 @@ try
             Check(process.WaitForExit(5000) && errors.Count == 0, "Exact selected executable is terminated");
         }
         finally { if (!process.HasExited) process.Kill(); }
+
+        using var probeProcess = Process.Start(new ProcessStartInfo(probe) { UseShellExecute = false, CreateNoWindow = true })!;
+        try
+        {
+            Thread.Sleep(250);
+            var limitState = new AppState { TimeLimits = [new(probe, "Probe", 1, true)] };
+            var limitTracker = new TimeLimitTracker(limitState, clock, new DirectForeground(probe));
+            limitTracker.RecordActiveTime(60);
+            var eval = limitTracker.Evaluate();
+            Check(eval.Blocked.Count == 1 && eval.Blocked[0].Path == probe, "Daily time limit tracker flags probe executable as blocked upon exhaustion");
+            monitor.Block(eval.Blocked, DateTimeOffset.MaxValue);
+            Check(probeProcess.WaitForExit(5000), "Exhausted daily time limit automatically terminates running process");
+        }
+        finally { if (!probeProcess.HasExited) probeProcess.Kill(); }
     }
 }
 finally { Directory.Delete(temp, true); }
 Console.WriteLine($"All {checks} checks passed.");
+
+sealed class DirectForeground(string path) : IForegroundTracker { public string? GetActiveExecutablePath() => path; }
 
 sealed class TestClock : TimeProvider
 {
