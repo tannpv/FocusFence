@@ -10,9 +10,11 @@ function ConvertFrom-BlockedExecutableRequest {
     $paths = @($decoded)
     if ($paths.Count -gt 100) { throw 'Select at most 100 individual apps.' }
     foreach ($path in $paths) {
-        if ($path -isnot [string] -or -not [IO.Path]::IsPathRooted($path) -or $path -notmatch '\.exe$') {
+        if ($path -isnot [string] -or [string]::IsNullOrWhiteSpace($path)) { throw 'Each individual app must be an absolute executable path.' }
+        $trimmed = $path.Trim()
+        if (-not [IO.Path]::IsPathRooted($trimmed) -or $trimmed -notmatch '\.exe$') {
             throw 'Each individual app must be an absolute executable path.'
         }
-        Write-Output $path
+        Write-Output $trimmed
     }
 }
