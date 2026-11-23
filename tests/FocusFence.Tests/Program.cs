@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FocusFence.Core;
+using FocusFence.Tests;
 using FocusFence.Windows;
 
 var checks = 0;
@@ -59,29 +60,7 @@ Reject(() => WindowsStartupRegistration.BuildCommand(@"C:\" + new string('a', 26
 Directory.CreateDirectory(temp);
 try
 {
-    var path = Path.Combine(temp, "settings.json");
-    var store = new JsonStateStore(path);
-    controller.Start([new("Example", @"C:\Example\app.exe")], 5);
-    store.Save(state);
-    var restored = store.Load();
-    Check(restored.Session!.EndsAt == state.Session!.EndsAt, "Session deadline survives storage round trip");
-    state.Schedules.Add(new(Guid.NewGuid(), "Saved schedule", state.Blocklists[0].Id, [DayOfWeek.Monday], new(9, 0), new(17, 0), TimeZoneInfo.Local.Id, true));
-    state.SkippedSchedules[state.Schedules[0].Id] = clock.GetUtcNow().AddHours(1);
-    store.Save(state);
-    var scheduledState = store.Load();
-    Check(scheduledState.Schedules.Single().StartsAt == new TimeOnly(9, 0) && scheduledState.SkippedSchedules.Count == 1, "Schedules and skipped periods survive JSON persistence");
-    state.ManagedDraft = new("TestStandardUser", true, false);
-    store.Save(state);
-    Check(store.Load().ManagedDraft == state.ManagedDraft, "Managed account and policy options survive settings reload");
-    File.WriteAllText(path, "{}");
-    Check(store.Load().Schedules.Count == 0, "Legacy settings load with schedules disabled by default");
-    Check(store.Load().ManagedDraft == new ManagedPolicyDraft(), "Legacy settings receive an empty managed-account draft");
-    clock.Advance(TimeSpan.FromMinutes(6));
-    Check(new SessionController(restored, clock).Expire(), "Expired saved session reconciled after restart");
-    File.WriteAllText(path, "{broken");
-    try { store.Load(); throw new Exception("Corrupt settings accepted"); }
-    catch (System.Text.Json.JsonException) { Check(File.ReadAllText(path) == "{broken", "Corrupt settings preserved, not silently overwritten"); }
-
+    StorageChecks.Run(Check, controller, state, clock, temp);
     var policy = new WindowsTargetPolicy();
     if (args.Contains("--catalog"))
     {
@@ -127,12 +106,3 @@ try
 }
 finally { Directory.Delete(temp, true); }
 Console.WriteLine($"All {checks} checks passed.");
-
-sealed class DirectForeground(string path) : IForegroundTracker { public string? GetActiveExecutablePath() => path; }
-
-sealed class TestClock : TimeProvider
-{
-    private DateTimeOffset now = DateTimeOffset.UtcNow;
-    public override DateTimeOffset GetUtcNow() => now;
-    public void Advance(TimeSpan amount) => now += amount;
-}
