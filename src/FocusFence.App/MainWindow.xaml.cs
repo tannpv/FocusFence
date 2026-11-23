@@ -39,7 +39,7 @@ public partial class MainWindow : Window
         Minutes.Text = state.SessionMinutes.ToString(); Delay.Text = state.UnlockSeconds.ToString();
         RefreshLists();
         Schedules.Initialize(state, Save, CanEdit, message => Status.Text = message);
-        TimeLimits.Initialize(state, timeLimits, Save, EnsureAuthenticated, message => Status.Text = message);
+        TimeLimits.Initialize(state, timeLimits, Save, EnsureAuthenticated, message => Status.Text = message, catalog);
         ManagedAccount.Initialize(managedAccount, state, EnsureAuthenticated, Save);
         AppAccess.Initialize(state, catalog, policy, Save, EnsureAuthenticated);
         ManagedAccount.DraftChanged += (_, _) => AppAccess.RefreshSummary();

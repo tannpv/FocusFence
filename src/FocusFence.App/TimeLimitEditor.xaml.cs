@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -13,16 +14,42 @@ public partial class TimeLimitEditor : UserControl
 {
     private AppState? state;
     private TimeLimitTracker? tracker;
+    private IAppCatalog? catalog;
     private Func<bool> save = () => false;
     private Func<bool> authenticate = () => false;
     private Action<string> status = _ => { };
 
-    public TimeLimitEditor() { InitializeComponent(); }
+    public TimeLimitEditor()
+    {
+        InitializeComponent();
+        Loaded += (_, _) => RefreshAvailableApps();
+    }
 
-    public void Initialize(AppState appState, TimeLimitTracker limitTracker, Func<bool> saveState, Func<bool> auth, Action<string> showStatus)
+    public void Initialize(AppState appState, TimeLimitTracker limitTracker, Func<bool> saveState, Func<bool> auth, Action<string> showStatus, IAppCatalog? appCatalog = null)
     {
         state = appState; tracker = limitTracker; save = saveState; authenticate = auth; status = showStatus;
-        Refresh();
+        catalog = appCatalog;
+        Refresh(); RefreshAvailableApps();
+    }
+
+    public async void RefreshAvailableApps()
+    {
+        if (catalog is null) return;
+        try
+        {
+            var apps = (await Task.Run(catalog.Discover)).Where(a => a.Restriction is null).OrderBy(a => a.Name).ToList();
+            AppPicker.ItemsSource = apps;
+        }
+        catch { }
+    }
+
+    private void OnAppPicked(object sender, SelectionChangedEventArgs e)
+    {
+        if (AppPicker.SelectedItem is CatalogApp app)
+        {
+            LimitName.Text = app.Name; LimitPath.Text = app.Path;
+            if (string.IsNullOrWhiteSpace(LimitMinutes.Text)) LimitMinutes.Text = "60";
+        }
     }
 
     public void Refresh()
@@ -43,8 +70,7 @@ public partial class TimeLimitEditor : UserControl
     {
         if (LimitsList.SelectedItem is TimeLimitRow row)
         {
-            LimitName.Text = row.Limit.Name;
-            LimitPath.Text = row.Limit.Path;
+            LimitName.Text = row.Limit.Name; LimitPath.Text = row.Limit.Path;
             LimitMinutes.Text = row.Limit.DailyMinutes.ToString();
         }
     }
@@ -62,43 +88,37 @@ public partial class TimeLimitEditor : UserControl
 
     private void Add15Minutes(object sender, RoutedEventArgs e) => AddBonus(sender, 15);
     private void Add30Minutes(object sender, RoutedEventArgs e) => AddBonus(sender, 30);
-
     private void AddBonus(object sender, int minutes)
     {
-        if (tracker is null || !authenticate()) return;
-        if (sender is Button { Tag: string path })
+        if (tracker is not null && authenticate() && sender is Button { Tag: string path })
         {
             tracker.GrantBonusMinutes(path, minutes);
-            save(); Refresh();
-            status($"Granted +{minutes}m bonus time.");
+            save(); Refresh(); status($"Granted +{minutes}m bonus time.");
         }
     }
 
     private void DeleteLimit(object sender, RoutedEventArgs e)
     {
-        if (state is null || !authenticate()) return;
-        if (sender is Button { Tag: string path })
+        if (state is not null && authenticate() && sender is Button { Tag: string path })
         {
             state.TimeLimits.RemoveAll(l => string.Equals(l.Path, path, StringComparison.OrdinalIgnoreCase));
-            save(); Refresh(); ClearForm(sender, e);
-            status("Daily limit removed.");
+            save(); Refresh(); ClearForm(sender, e); status("Daily limit removed.");
         }
     }
 
     private void BrowseExecutable(object sender, RoutedEventArgs e)
     {
         var dialog = new OpenFileDialog { Filter = "Applications (*.exe)|*.exe", CheckFileExists = true };
-        if (dialog.ShowDialog() == true)
-        {
-            LimitPath.Text = dialog.FileName;
-            if (string.IsNullOrWhiteSpace(LimitName.Text)) LimitName.Text = Path.GetFileNameWithoutExtension(dialog.FileName);
-        }
+        if (dialog.ShowDialog() != true) return;
+        LimitPath.Text = dialog.FileName;
+        if (string.IsNullOrWhiteSpace(LimitName.Text)) LimitName.Text = Path.GetFileNameWithoutExtension(dialog.FileName);
+        if (string.IsNullOrWhiteSpace(LimitMinutes.Text)) LimitMinutes.Text = "60";
     }
 
     private void ClearForm(object sender, RoutedEventArgs e)
     {
         LimitName.Text = ""; LimitPath.Text = ""; LimitMinutes.Text = "";
-        LimitsList.SelectedItem = null;
+        LimitsList.SelectedItem = null; AppPicker.SelectedItem = null;
     }
 
     public sealed record TimeLimitRow(AppTimeLimit Limit, string UsageSummary, string StatusText, Brush StatusColor);
