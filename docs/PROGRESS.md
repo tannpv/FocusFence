@@ -125,8 +125,21 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)**.
 
+### Milestone 8: Daily Limit Exhaustion Notification & Window Lifecycle Modularization
+* **Date**: 2026-11-23
+* **Branch**: `feature/daily-limit-exhausted-notification` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Implemented `NewlyExhausted` tracking in `TimeLimitTracker` and `ExhaustedEmitted` in `AppDailyUsage`.
+  - Emitted Windows system tray notification balloon tips (`Daily limit reached: {app} has reached its daily limit today.`) exactly once upon daily limit exhaustion, preventing unexpected app closure confusion for children.
+  - Relocated window lifecycle and exit methods (`ShowWindow`, `OnClosing`, `ExitApp`) from `MainWindow.xaml.cs` to `MainWindow.Settings.cs` to optimize file line budget.
+  - Added unit test assertions in `TimeLimitChecks.cs` verifying single-emission of exhaustion notifications and reset upon bonus minutes grant.
+* **Line Budget Compliance**: All 65 files strictly meet the $\le 120$ lines target (`MainWindow.xaml.cs` reduced to 120 lines, `MainWindow.Settings.cs` at 93 lines).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 87 unit tests passed, 11 UI smoke tests passed, 34 policy tests passed.
+  - Live resident application running under PID `8720`.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (7 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (8 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (93 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

@@ -122,5 +122,23 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: 5/5 quality gates passed 100% green",
     "tags": ["machine-gates", "harness-runner", "automated-testing", "line-budget-guard", "ci-cd"]
+  },
+  {
+    "id": "mem_008_daily_limit_exhausted_notification",
+    "domain": "desktop/windows/focusfence",
+    "category": "ux_feature",
+    "title": "Milestone 8: Daily Limit Exhaustion Notification & Lifecycle Modularization",
+    "timestamp": "2026-11-23T14:35:00Z",
+    "summary": "Implemented single-emission tray notifications upon screen time exhaustion (NewlyExhausted targets), eliminating confusion when games/apps are closed upon limit expiry. Added unit tests for exhaustion detection and bonus reset. Reorganized window lifecycle methods to MainWindow.Settings.cs, maintaining 100% compliance with <= 120 line budgets.",
+    "files_affected": [
+      "src/FocusFence.Core/TimeLimitModels.cs",
+      "src/FocusFence.Core/TimeLimitTracker.cs",
+      "src/FocusFence.App/MainWindow.xaml.cs",
+      "src/FocusFence.App/MainWindow.Settings.cs",
+      "tests/FocusFence.Tests/TimeLimitChecks.cs",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: 87/87 unit tests, 11/11 UI smoke, 34/34 policy tests (100% green)",
+    "tags": ["ux", "notifications", "time-limits", "child-screen-time", "lifecycle-modularization"]
   }
 ]
