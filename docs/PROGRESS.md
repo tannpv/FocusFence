@@ -51,3 +51,20 @@
   - `FocusFence.Tests`: **83/83 checks PASSED** (100% green).
   - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 tabs**.
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy checks).
+
+### Milestone 4: Progressive Modularization & Rule #1 Line Budget Ratchet
+* **Date**: 2026-11-23
+* **Branch**: `refactor/modularize-main-window` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Decomposed `MainWindow.xaml.cs` (previously 298 lines) into 4 cohesive submodules adhering to the Submodule Decomposition Playbook:
+    1. `MainWindow.xaml.cs` (128 lines): Core window initialization, component binding, polling tick loop, tray management, and window lifecycle.
+    2. `MainWindow.Blocklists.cs` (88 lines): Blocklist CRUD operations, target selection/browsing, and running application discovery.
+    3. `MainWindow.Session.cs` (47 lines): Focus session start/stop, emergency unlock handling, and real-time timer UI updates.
+    4. `MainWindow.Settings.cs` (83 lines): Windows session lock listener, PIN authentication dialog gates, startup preference persistence, and unlock delay settings.
+  - Updated `README.md` to document the new Daily Time Limits (Child screen time) architecture and capabilities.
+* **Line Budget Compliance**: **100% of production files in `src/` now comply with Rule #1 budgets** (`< 150 lines` hard limit, target `< 120 lines`). Peak file line count in production dropped from 298 to 128 lines.
+* **Comprehensive Verification**:
+  - `dotnet build -c Release`: 0 errors, 0 warnings.
+  - `FocusFence.Tests`: **83/83 checks PASSED** (100% green).
+  - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 WPF tabs**.
+  - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy validation).
