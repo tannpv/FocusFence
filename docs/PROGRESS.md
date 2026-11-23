@@ -175,8 +175,25 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 88 unit tests, 11 UI smoke tests, 38 policy tests, 66 line budget checks.
 
+### Milestone 12: Admin Request Hardening & Test-ManagedPolicy Suite Expansion
+* **Date**: 2026-11-23
+* **Branch**: `test/expand-policy-admin-tests-and-hardening` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Hardened [RequestParser.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/Admin/RequestParser.ps1) (20 lines) with whitespace trimming and empty path protection.
+  - Added deduplication for blocked executables in [ManageAccount.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/Admin/ManageAccount.ps1) (98 lines).
+  - Introduced reusable `Assert-Throws` helper in [Test-ManagedPolicy.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/tests/Test-ManagedPolicy.ps1) (94 lines).
+  - Added 5 new automated policy checks (+5 checks, 43 total policy tests):
+    1. Base64 payload length ceiling (> 20,000 chars rejection).
+    2. Batch application count ceiling (> 100 apps rejection).
+    3. Exact deduplication of duplicate app path requests.
+    4. Safe path trimming of leading/trailing whitespace.
+    5. Rejection of invalid service startup modes in `Set-IdentityStartup`.
+* **Line Budget Compliance**: All 66 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 88 unit tests, 11 UI smoke tests, 43 policy tests, 66 line budget checks.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (11 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (12 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

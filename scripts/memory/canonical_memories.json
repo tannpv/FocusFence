@@ -189,5 +189,21 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: 88 unit tests, 11 UI smoke, 38 policy tests, 66 line budget checks (100% green)",
     "tags": ["time-limits", "ux-toggle", "screen-time", "retention-pruning", "clean-architecture", "line-budget"]
+  },
+  {
+    "id": "mem_012_admin_request_hardening_and_policy_test_expansion",
+    "domain": "desktop/windows/focusfence",
+    "category": "security_infrastructure",
+    "title": "Milestone 12: Admin Request Hardening & Test-ManagedPolicy Suite Expansion",
+    "timestamp": "2026-11-23T14:58:00Z",
+    "summary": "Hardened RequestParser.ps1 with whitespace trimming and validation guards. Added deduplication for blocked executables in ManageAccount.ps1. Expanded Test-ManagedPolicy.ps1 with Assert-Throws harness helper and 5 new automated policy checks (+5 checks, 43 total): payload length ceiling (>20,000 chars), app count ceiling (>100 apps), whitespace trimming, duplicate path deduplication, and service startup mode rejection. 100% compliant with strict line budget.",
+    "files_affected": [
+      "src/FocusFence.App/Admin/RequestParser.ps1",
+      "src/FocusFence.App/Admin/ManageAccount.ps1",
+      "tests/Test-ManagedPolicy.ps1",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: 88 unit tests, 11 UI smoke, 43 policy tests, 66 line budget checks (100% green)",
+    "tags": ["applocker", "admin-security", "request-hardening", "powershell-testing", "line-budget"]
   }
 ]
