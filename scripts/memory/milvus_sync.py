@@ -4,6 +4,24 @@ import json
 from pathlib import Path
 
 MEMORY_FILE = Path(__file__).parent / "canonical_memories.json"
+def load_dotenv():
+    search_dirs = [
+        Path.cwd(),
+        Path(__file__).resolve().parent.parent.parent,
+        Path(__file__).resolve().parent,
+    ]
+    for d in search_dirs:
+        env_path = d / ".env"
+        if env_path.exists():
+            with open(env_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        k, v = line.split("=", 1)
+                        os.environ.setdefault(k.strip(), v.strip().strip("'\""))
+            break
+
+load_dotenv()
 COLLECTION_NAME = os.getenv("MILVUS_COLLECTION", "focusfence_canonical_memories")
 HOST = os.getenv("MILVUS_HOST", "")
 PORT = os.getenv("MILVUS_PORT", "19530")
