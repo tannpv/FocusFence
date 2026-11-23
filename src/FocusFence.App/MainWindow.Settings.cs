@@ -80,4 +80,14 @@ public partial class MainWindow
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         { Status.Text = "Could not save settings: " + ex.Message; return false; }
     }
+
+    private void ShowWindow() { Show(); WindowState = WindowState.Normal; Activate(); }
+    private void OnClosing(object? sender, System.ComponentModel.CancelEventArgs e) { if (!exiting) { e.Cancel = true; authentication.Lock(); UpdateAuthentication(); Hide(); } }
+    private void ExitApp()
+    {
+        if (!EnsureAuthenticated()) return;
+        if (polling) { Status.Text = "Please try Exit again after the current blocking check."; ShowWindow(); return; }
+        if (session.Session is not null && MessageBox.Show("Exit and stop blocking? Your saved session can be resumed when you reopen FocusFence.", "Exit FocusFence", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+        exiting = true; Close();
+    }
 }

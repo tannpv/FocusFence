@@ -19,6 +19,7 @@ public sealed class AppDailyUsage
     public int UsedSeconds { get; set; }
     public int BonusMinutes { get; set; }
     public bool WarningEmitted { get; set; }
+    public bool ExhaustedEmitted { get; set; }
 }
 
 public sealed record TimeLimitStatus(AppTimeLimit Limit, int UsedSeconds, int TotalAllowedSeconds, int RemainingSeconds, bool IsExhausted);
