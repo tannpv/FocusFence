@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
 $items = Get-ChildItem -Path $Root -Recurse -File | Where-Object {
-    $_.FullName -notmatch '\\(bin|obj|artifacts|\.nuget_appdata|\.git)\\' -and
+    $_.FullName -notmatch '\\(bin|obj|artifacts|\.nuget_appdata|\.git|scratch)\\' -and
     $_.Extension -in '.cs', '.xaml', '.ps1', '.py'
 }
 
