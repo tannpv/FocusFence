@@ -25,7 +25,7 @@ function Add-PathPolicyRule {
 function New-PublisherCondition {
     param([xml]$Document, [string]$Publisher, [string]$Product)
     $condition = New-PolicyElement $Document 'FilePublisherCondition' @{ PublisherName = $Publisher; ProductName = $Product; BinaryName = '*' }
-    [void]$condition.AppendChild((New-PolicyElement $Document 'BinaryVersionRange' @{ LowSection = '0.0.0.0'; HighSection = '*' }))
+    [void]$condition.AppendChild((New-PolicyElement $Document 'BinaryVersionRange' @{ LowSection = '0.0.0.0'; HighSection = '65535.65535.65535.65535' }))
     return ,$condition
 }
 
