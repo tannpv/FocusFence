@@ -27,6 +27,10 @@ public sealed class JsonStateStore(string path) : IStateStore
             state.Schedules.Any(s => s is null || SchedulePlanner.Validate(s, state.Blocklists) is not null) ||
             state.Schedules.Select(s => s.Id).Distinct().Count() != state.Schedules.Count)
             throw new InvalidDataException("Settings contain invalid schedules. Restore or rename the settings file.");
+        if (state.TimeLimits is null || state.DailyUsages is null ||
+            state.TimeLimits.Any(l => l is null || AppTimeLimit.Validate(l) is not null) ||
+            state.TimeLimits.Select(l => l.Path.ToLowerInvariant()).Distinct().Count() != state.TimeLimits.Count)
+            throw new InvalidDataException("Settings contain invalid time limits. Restore or rename the settings file.");
         return state;
     }
 
