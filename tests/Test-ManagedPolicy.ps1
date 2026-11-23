@@ -10,6 +10,11 @@ function Assert($condition, [string]$message) {
     if (-not $condition) { throw "FAIL: $message" }
     $script:checks++; Write-Output "PASS: $message"
 }
+function Assert-Throws([scriptblock]$action, [string]$message) {
+    $rejected = $false
+    try { & $action } catch { $rejected = $true }
+    Assert $rejected $message
+}
 $sid = if ($TargetAccount) { (Get-LocalUser -Name $TargetAccount).SID.Value } else { [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
 function Encode-Request([string]$json) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json)) }
 $singlePath = @(ConvertFrom-BlockedExecutableRequest (Encode-Request '["C:\\Example App\\player.exe"]'))
@@ -18,10 +23,16 @@ $multiplePaths = @(ConvertFrom-BlockedExecutableRequest (Encode-Request '["C:\\E
 Assert ($multiplePaths.Count -eq 2 -and $multiplePaths[1] -eq 'C:\Example\two.exe') 'Multiple app request preserves each path'
 Assert (@(ConvertFrom-BlockedExecutableRequest (Encode-Request '[]')).Count -eq 0) 'Empty app request remains empty'
 foreach ($invalidJson in @('[null]', '[["C:\\Example\\one.exe"]]', '[42]', '"C:\\Example\\one.exe"', '["relative.exe"]')) {
-    $rejected = $false
-    try { $null = ConvertFrom-BlockedExecutableRequest (Encode-Request $invalidJson) } catch { $rejected = $true }
-    Assert $rejected 'Malformed individual app request is rejected'
+    Assert-Throws { ConvertFrom-BlockedExecutableRequest (Encode-Request $invalidJson) } 'Malformed individual app request is rejected'
 }
+Assert-Throws { ConvertFrom-BlockedExecutableRequest ('A' * 20001) } 'Request exceeding 20000 characters is rejected'
+$tooMany = Encode-Request ('[' + ((1..101 | ForEach-Object { '"C:\\App' + $_ + '.exe"' }) -join ',') + ']')
+Assert-Throws { ConvertFrom-BlockedExecutableRequest $tooMany } 'Request exceeding 100 apps is rejected'
+$dupPaths = @(ConvertFrom-BlockedExecutableRequest (Encode-Request '["C:\\Example\\one.exe","C:\\Example\\one.exe"]') | Select-Object -Unique)
+Assert ($dupPaths.Count -eq 1 -and $dupPaths[0] -eq 'C:\Example\one.exe') 'Duplicate app requests are deduplicated'
+$trimmedPath = @(ConvertFrom-BlockedExecutableRequest (Encode-Request '["  C:\\Example\\trimmed.exe  "]'))
+Assert ($trimmedPath.Count -eq 1 -and $trimmedPath[0] -eq 'C:\Example\trimmed.exe') 'App paths with whitespace are trimmed'
+Assert-Throws { Set-IdentityStartup 'InvalidMode' } 'Unknown service startup mode is rejected'
 Assert (-not (Test-SrpConfigurationContent @{} 0)) 'Empty SRP key does not indicate configured restrictions'
 Assert (-not (Test-SrpConfigurationContent @{ authenticodeenabled = 0 } 0)) 'Disabled certificate setting alone does not indicate configured restrictions'
 Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = 0 } 1) 'SRP subkeys still prevent applying policy'

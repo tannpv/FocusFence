@@ -42,7 +42,7 @@ try {
 
     $blockedExecutables = @()
     if ($BlockedExecutablesBase64) {
-        $blockedExecutables = @(ConvertFrom-BlockedExecutableRequest $BlockedExecutablesBase64)
+        $blockedExecutables = @(ConvertFrom-BlockedExecutableRequest $BlockedExecutablesBase64 | Select-Object -Unique)
         foreach ($path in $blockedExecutables) {
             if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "The individual app executable cannot be found: $path. Refresh the app list." }
             if ([IO.Path]::GetFullPath($path).StartsWith($env:SystemRoot.TrimEnd('\') + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Individual app switches cannot target Windows system executables.' }
