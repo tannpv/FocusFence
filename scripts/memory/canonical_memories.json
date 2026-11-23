@@ -82,5 +82,30 @@
     ],
     "verification": "FocusFence.Tests (85/85), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34)",
     "tags": ["ux", "time-limits", "app-picker", "combobox", "catalog-discovery"]
+  },
+  {
+    "id": "mem_006_complete_codebase_modularization",
+    "domain": "desktop/windows/focusfence",
+    "category": "code_refactoring",
+    "title": "Milestone 6: Complete Submodule Modularization & Line Budget Verification",
+    "timestamp": "2026-11-23T14:20:00Z",
+    "summary": "Enforced AI Harness Rule #1 strict line budget (< 120 lines target, < 150 lines ceiling) across all repository code. Decomposed ManageAccount.ps1 (238 lines) into 5 focused submodules (ManageAccount.ps1, AdminPreflight.ps1, BackupSecurity.ps1, AccountUi.ps1, UninstallerInventory.ps1, SummaryFormatter.ps1). Decomposed test harnesses UiSmoke and FocusFence.Tests into dedicated fakes and helper modules. 100% of all 63 files across src, tests, and tools are now <= 120 lines with 0 violations and 0 warnings.",
+    "files_affected": [
+      "src/FocusFence.App/Admin/ManageAccount.ps1",
+      "src/FocusFence.App/Admin/AdminPreflight.ps1",
+      "src/FocusFence.App/Admin/BackupSecurity.ps1",
+      "src/FocusFence.App/Admin/AccountUi.ps1",
+      "src/FocusFence.App/Admin/UninstallerInventory.ps1",
+      "src/FocusFence.App/Admin/SummaryFormatter.ps1",
+      "tests/FocusFence.UiSmoke/Program.cs",
+      "tests/FocusFence.UiSmoke/UiSmokeFakes.cs",
+      "tests/FocusFence.UiSmoke/UiSmokeHelpers.cs",
+      "tests/FocusFence.Tests/Program.cs",
+      "tests/FocusFence.Tests/StorageChecks.cs",
+      "tests/FocusFence.Tests/TestFakes.cs",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "FocusFence.Tests (85/85), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34), Build-Installer.ps1 (34.6s)",
+    "tags": ["modularization", "clean-architecture", "line-budget", "zero-debt", "powershell-admin", "test-harness"]
   }
 ]

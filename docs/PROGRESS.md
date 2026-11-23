@@ -85,8 +85,32 @@
   - `FocusFence.UiSmoke`: **11/11 checks PASSED** (including `AppPicker` automated population check).
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED**.
 
+### Milestone 6: Complete Submodule Modularization & Line Budget Verification
+* **Date**: 2026-11-23
+* **Branch**: `refactor/modularize-line-budgets` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Audited file line counts across the entire codebase against AI Harness Rule #1 (`< 120 lines` target, `< 150 lines` ceiling).
+  - Decomposed `ManageAccount.ps1` (previously 238 lines) into 5 focused submodules:
+    1. `ManageAccount.ps1` (101 lines): Lean orchestrator handling action routing, policy application, and error containment.
+    2. `AdminPreflight.ps1` (58 lines): Pre-flight privilege checks, domain detection, SRP/MDM conflict checks, mutual exclusion lock, and backup ACLs.
+    3. `BackupSecurity.ps1` (28 lines): Journal persistence, AppIDSvc startup configuration, and reparse point ACL security verification.
+    4. `AccountUi.ps1` (25 lines): WinForms modal preview and result dialogs.
+    5. `UninstallerInventory.ps1` (25 lines): Target user registry enumeration and uninstaller executable path extraction.
+    6. `SummaryFormatter.ps1` (21 lines): Policy preview report generation.
+  - Decomposed test harness suites to strictly eliminate all line budget warnings:
+    1. `tests/FocusFence.UiSmoke/Program.cs` (reduced from 233 to 109 lines) via `UiSmokeFakes.cs` (47 lines) and `UiSmokeHelpers.cs` (81 lines).
+    2. `tests/FocusFence.Tests/Program.cs` (reduced from 138 to 98 lines) via `StorageChecks.cs` (34 lines) and `TestFakes.cs` (16 lines).
+  - Built and verified full Inno Setup installer package `artifacts/installer/output/FocusFence-1.0.0-Setup-x64.exe` with new Admin submodules included.
+* **Line Budget Compliance**: **100% of all files across `src/`, `tests/`, and `tools/` (63/63 files) are strictly <= 120 lines**. Zero violations (> 150 lines), zero warnings (121-150 lines).
+* **Comprehensive Verification**:
+  - `dotnet build -c Release`: 0 errors, 0 warnings.
+  - `FocusFence.Tests`: **85/85 checks PASSED** (100% green).
+  - `FocusFence.UiSmoke`: **11/11 checks PASSED** across all 7 WPF tabs.
+  - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED**.
+  - `Build-Installer.ps1`: Inno Setup installer compiled in 34.6s with zero errors.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (5 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (6 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (93 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.
