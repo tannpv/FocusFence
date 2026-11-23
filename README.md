@@ -70,6 +70,16 @@ Create a blocklist, then open **Schedules**. Enter a name, select the blocklist 
 - After sleep, the app evaluates the current time; it does not replay missed periods. Spring daylight-saving gaps advance to the first valid minute; fall repeated times use the earliest start and latest end.
 - Keep FocusFence running in the tray. Schedules cannot block when the app is closed; optional sign-in startup is available in Settings.
 
+## Daily time limits (Child screen time)
+
+Open **Time limits** to set maximum daily screen time allowances for specific games and desktop applications.
+
+- **Active Foreground Tracking**: FocusFence measures active usage by inspecting the focused foreground window (`GetForegroundWindow`) and matching its process image name via non-blocking Win32 APIs. Time accumulates only while the monitored application is actively in the foreground.
+- **5-Minute Warning**: When an application reaches 5 minutes of remaining allowance for the day, FocusFence emits a Windows tray warning notification so children have time to save games or wrap up tasks.
+- **Automatic Enforcement**: As soon as the daily allowance is exhausted, the application is automatically closed and blocked from running for the remainder of the day.
+- **Parent Bonus Time**: Parents can grant +15 or +30 minutes of bonus screen time directly from the Time limits tab using their PIN.
+- **Midnight Rollover & Retention**: Daily usage counters automatically roll over at local midnight, resetting the allowance for the new day. Historical daily usage older than 14 days is automatically pruned to keep local storage lightweight.
+
 ## Start at sign-in
 
 In **Settings**, check **Start FocusFence at Windows sign-in** and click **Apply startup preference**. It is off by default. This registers only FocusFence's entry under the current user's Windows Run key; administrator access is not required. Uncheck and apply to remove the entry.
