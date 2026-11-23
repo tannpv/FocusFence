@@ -15,7 +15,7 @@ if (-not $CompilerPath) { throw 'Install Inno Setup 6 or supply -CompilerPath to
 $version = ([xml](Get-Content (Join-Path $projectRoot 'src/FocusFence.App/Properties/Version.props') -Raw)).Project.PropertyGroup.Version
 $payload = Join-Path $projectRoot 'artifacts/installer/payload'
 $output = Join-Path $projectRoot 'artifacts/installer/output'
-& dotnet publish (Join-Path $projectRoot 'src/FocusFence.App') -c Release -r win-x64 --self-contained true -o $payload -p:PublishSingleFile=false
+& dotnet publish (Join-Path $projectRoot 'src/FocusFence.App') -c Release -r win-x64 --self-contained true -o $payload -p:PublishSingleFile=false -m:1
 if ($LASTEXITCODE -ne 0) { throw 'Installer payload build failed.' }
 Copy-Item (Join-Path $projectRoot 'README.md') -Destination $payload
 & $CompilerPath "/DAppVersion=$version" "/DPayloadDir=$payload" "/DOutputDir=$output" (Join-Path $projectRoot 'installer/FocusFence.iss')
