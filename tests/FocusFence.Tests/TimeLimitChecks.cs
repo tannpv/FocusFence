@@ -54,6 +54,9 @@ internal static class TimeLimitChecks
         tracker.RecordActiveTime(300); // reaches 3600s
         var evalBlocked = tracker.Evaluate();
         check(evalBlocked.Blocked.Any(b => b.Path.Equals(@"C:\Games\roblox.exe", StringComparison.OrdinalIgnoreCase)), "App is blocked once daily limit is exhausted");
+        check(evalBlocked.NewlyExhausted.Any(e => e.Path.Equals(@"C:\Games\roblox.exe", StringComparison.OrdinalIgnoreCase)), "Newly exhausted notification emitted on exhaustion");
+        var evalBlockedAgain = tracker.Evaluate();
+        check(!evalBlockedAgain.NewlyExhausted.Any(e => e.Path.Equals(@"C:\Games\roblox.exe", StringComparison.OrdinalIgnoreCase)), "Exhausted notification is not re-emitted on subsequent evaluation");
         check(tracker.GetStatus(@"C:\Games\roblox.exe")!.IsExhausted, "App status reports exhausted");
 
         // 7. Parent bonus minutes unblocks the app

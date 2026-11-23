@@ -1,6 +1,6 @@
 namespace FocusFence.Core;
 
-public sealed record TimeLimitEvaluation(IReadOnlyList<AppTarget> Blocked, IReadOnlyList<AppTarget> Warnings);
+public sealed record TimeLimitEvaluation(IReadOnlyList<AppTarget> Blocked, IReadOnlyList<AppTarget> Warnings, IReadOnlyList<AppTarget> NewlyExhausted);
 
 public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegroundTracker foreground)
 {
@@ -20,6 +20,7 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
     {
         var blocked = new List<AppTarget>();
         var warnings = new List<AppTarget>();
+        var exhausted = new List<AppTarget>();
         foreach (var limit in state.TimeLimits.Where(l => l.Enabled))
         {
             var usage = GetOrCreateTodayUsage(limit.Path);
@@ -28,6 +29,11 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
             if (remaining == 0)
             {
                 blocked.Add(new(limit.Name, limit.Path));
+                if (!usage.ExhaustedEmitted)
+                {
+                    exhausted.Add(new(limit.Name, limit.Path));
+                    usage.ExhaustedEmitted = true;
+                }
             }
             else if (remaining <= 300 && !usage.WarningEmitted)
             {
@@ -35,7 +41,7 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
                 usage.WarningEmitted = true;
             }
         }
-        return new(blocked, warnings);
+        return new(blocked, warnings, exhausted);
     }
 
     public void GrantBonusMinutes(string path, int minutes)
@@ -43,8 +49,10 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
         var usage = GetOrCreateTodayUsage(path);
         usage.BonusMinutes += minutes;
         var limit = state.TimeLimits.FirstOrDefault(l => string.Equals(l.Path, path, StringComparison.OrdinalIgnoreCase));
-        if (limit is not null && ((limit.DailyMinutes + usage.BonusMinutes) * 60 - usage.UsedSeconds) > 300)
-            usage.WarningEmitted = false;
+        if (limit is null) return;
+        var remaining = (limit.DailyMinutes + usage.BonusMinutes) * 60 - usage.UsedSeconds;
+        if (remaining > 300) usage.WarningEmitted = false;
+        if (remaining > 0) usage.ExhaustedEmitted = false;
     }
 
     public TimeLimitStatus? GetStatus(string path)

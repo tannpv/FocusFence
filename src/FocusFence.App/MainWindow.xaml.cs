@@ -98,6 +98,8 @@ public partial class MainWindow : Window
             var limitEval = timeLimits.Evaluate();
             foreach (var warning in limitEval.Warnings)
                 tray.ShowBalloonTip(Defaults.NotificationMilliseconds, "Daily limit warning", $"{warning.Name} has 5 minutes remaining today.", Forms.ToolTipIcon.Warning);
+            foreach (var exhausted in limitEval.NewlyExhausted)
+                tray.ShowBalloonTip(Defaults.NotificationMilliseconds, "Daily limit reached", $"{exhausted.Name} has reached its daily limit today.", Forms.ToolTipIcon.Info);
             targets.AddRange(limitEval.Blocked.Where(a => policy.GetRejection(a.Path) is null));
 
             if (targets.Count > 0)
@@ -114,15 +116,5 @@ public partial class MainWindow : Window
         }
         catch (Exception ex) { Status.Text = "Blocking needs attention: " + ex.Message; }
         finally { polling = false; }
-    }
-
-    private void ShowWindow() { Show(); WindowState = WindowState.Normal; Activate(); }
-    private void OnClosing(object? sender, CancelEventArgs e) { if (!exiting) { e.Cancel = true; authentication.Lock(); UpdateAuthentication(); Hide(); } }
-    private void ExitApp()
-    {
-        if (!EnsureAuthenticated()) return;
-        if (polling) { Status.Text = "Please try Exit again after the current blocking check."; ShowWindow(); return; }
-        if (session.Session is not null && MessageBox.Show("Exit and stop blocking? Your saved session can be resumed when you reopen FocusFence.", "Exit FocusFence", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
-        exiting = true; Close();
     }
 }
