@@ -5,9 +5,11 @@ public sealed record TimeLimitEvaluation(IReadOnlyList<AppTarget> Blocked, IRead
 public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegroundTracker foreground)
 {
     private DateOnly Today => DateOnly.FromDateTime(clock.GetLocalNow().DateTime);
+    private DateOnly lastPrunedDate;
 
     public void RecordActiveTime(int elapsedSeconds = 1)
     {
+        EnsurePruned();
         var active = foreground.GetActiveExecutablePath();
         if (string.IsNullOrWhiteSpace(active)) return;
         var limit = state.TimeLimits.FirstOrDefault(l => l.Enabled && string.Equals(l.Path, active, StringComparison.OrdinalIgnoreCase));
@@ -18,6 +20,7 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
 
     public TimeLimitEvaluation Evaluate()
     {
+        EnsurePruned();
         var blocked = new List<AppTarget>();
         var warnings = new List<AppTarget>();
         var exhausted = new List<AppTarget>();
@@ -75,6 +78,7 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
 
     private AppDailyUsage GetOrCreateTodayUsage(string path)
     {
+        EnsurePruned();
         var usage = state.DailyUsages.FirstOrDefault(u => u.Date == Today && string.Equals(u.Path, path, StringComparison.OrdinalIgnoreCase));
         if (usage is null)
         {
@@ -82,5 +86,10 @@ public sealed class TimeLimitTracker(AppState state, TimeProvider clock, IForegr
             state.DailyUsages.Add(usage);
         }
         return usage;
+    }
+
+    private void EnsurePruned()
+    {
+        if (lastPrunedDate != Today) { PruneOldUsages(); lastPrunedDate = Today; }
     }
 }

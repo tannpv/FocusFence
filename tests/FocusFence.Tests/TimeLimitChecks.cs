@@ -70,10 +70,16 @@ internal static class TimeLimitChecks
         var nextDayStatus = tracker.GetStatus(@"C:\Games\roblox.exe")!;
         check(nextDayStatus.UsedSeconds == 0 && nextDayStatus.RemainingSeconds == 3600 && !nextDayStatus.IsExhausted, "Midnight rollover resets daily usage to full allowance");
 
-        // 9. Old usage records are pruned
+        // 9. Old usage records are automatically pruned on calendar day rollover
         clock.Advance(TimeSpan.FromDays(20));
-        tracker.PruneOldUsages(14);
-        check(state.DailyUsages.All(u => u.Date >= DateOnly.FromDateTime(clock.GetUtcNow().DateTime).AddDays(-14)), "Usage history older than 14 days is pruned");
+        tracker.Evaluate();
+        check(state.DailyUsages.All(u => u.Date >= DateOnly.FromDateTime(clock.GetUtcNow().DateTime).AddDays(-14)), "Usage history older than 14 days is automatically pruned on rollover");
+
+        // 10. Disabling a limit excludes it from blocking even if previously exhausted
+        var robloxLimit = state.TimeLimits.First(l => l.Path == @"C:\Games\roblox.exe");
+        state.TimeLimits[state.TimeLimits.IndexOf(robloxLimit)] = robloxLimit with { Enabled = false };
+        var evalDisabled = tracker.Evaluate();
+        check(!evalDisabled.Blocked.Any(b => b.Path.Equals(@"C:\Games\roblox.exe", StringComparison.OrdinalIgnoreCase)), "Disabled limit excludes app from blocked list");
     }
 
     private sealed class TestForeground : IForegroundTracker

@@ -12,6 +12,7 @@
     <StackPanel Margin="0,0,8,0"><TextBlock Text="Executable path" FontSize="11"/><TextBox x:Name="LimitPath" Width="220" AutomationProperties.Name="App executable path"/></StackPanel>
     <Button Content="Browse…" Click="BrowseExecutable" VerticalAlignment="Bottom" Margin="0,0,8,0"/>
     <StackPanel Margin="0,0,8,0"><TextBlock Text="Daily limit (minutes)" FontSize="11"/><TextBox x:Name="LimitMinutes" Width="80" AutomationProperties.Name="Daily limit minutes"/></StackPanel>
+    <CheckBox x:Name="LimitEnabled" Content="Enabled" IsChecked="True" VerticalAlignment="Bottom" Margin="0,0,8,6" AutomationProperties.Name="Limit enabled checkbox"/>
     <Button x:Name="SaveLimitButton" Content="Save limit" Click="SaveLimit" VerticalAlignment="Bottom" Margin="0,0,8,0"/>
     <Button Content="Clear" Click="ClearForm" VerticalAlignment="Bottom"/>
    </WrapPanel>
@@ -27,6 +28,7 @@
         <Image Source="{Binding Limit.Path, Converter={StaticResource ExecutableIcon}}" Width="24" Height="24" Margin="0,0,12,0"/>
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
          <TextBlock Text="{Binding StatusText}" FontWeight="SemiBold" Foreground="{Binding StatusColor}" Margin="0,0,12,0" VerticalAlignment="Center"/>
+         <Button Content="{Binding ToggleText}" Tag="{Binding Limit.Path}" Click="ToggleLimit" Margin="0,0,4,0"/>
          <Button Content="+15m" Tag="{Binding Limit.Path}" Click="Add15Minutes" Margin="0,0,4,0"/>
          <Button Content="+30m" Tag="{Binding Limit.Path}" Click="Add30Minutes" Margin="0,0,4,0"/>
          <Button Content="Delete" Tag="{Binding Limit.Path}" Click="DeleteLimit"/>
