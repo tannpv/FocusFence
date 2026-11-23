@@ -48,7 +48,7 @@ internal static class Program
             ((TextBox)limitEditor.FindName("LimitPath")).Text = @"C:\Games\roblox.exe";
             ((TextBox)limitEditor.FindName("LimitMinutes")).Text = "60";
             ((Button)limitEditor.FindName("SaveLimitButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
-            if (store.State.TimeLimits.Count != 1 || store.State.TimeLimits[0].DailyMinutes != 60)
+            if (store.State.TimeLimits.Count != 1 || store.State.TimeLimits[0].DailyMinutes != 60 || !store.State.TimeLimits[0].Enabled)
                 throw new Exception("Time limit editor did not persist the daily limit.");
             var appPicker = (ComboBox)limitEditor.FindName("AppPicker");
             if (appPicker.Items.Count > 0)
