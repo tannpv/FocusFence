@@ -3,6 +3,8 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\PolicyBuilder.ps1')
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\PolicyDetection.ps1')
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\RequestParser.ps1')
+. (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\SummaryFormatter.ps1')
+. (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\BackupSecurity.ps1')
 $script:checks = 0
 function Assert($condition, [string]$message) {
     if (-not $condition) { throw "FAIL: $message" }
@@ -70,4 +72,12 @@ if ($TargetAccount) {
         Assert ($decisions[0].PolicyDecision -eq 'Allowed') 'Windows evaluation leaves the operator account unrestricted'
     }
 }
+$testSummary = Format-PolicySummary -accountName 'StandardKid' -sid 'S-1-5-21-999' -restrictNewApps $true -blockUninstallers $true -blockedExecutables @('C:\Games\game.exe') -packages @([pscustomobject]@{ Name = 'Package1' }) -uninstallers @('C:\Games\uninst.exe') -unresolved @() -root 'C:\ProgramData\FocusFence-AdminPolicy'
+Assert ($testSummary.Contains('StandardKid (S-1-5-21-999)') -and $testSummary.Contains('APPROVED PACKAGE IDENTITIES (1):') -and $testSummary.Contains('C:\Games\game.exe')) 'Policy summary formatter generates complete preview report'
+$tempJournal = Join-Path $OutputDirectory 'test-journal.json'
+Save-Journal @{ Sid = $sid; Active = $true } $tempJournal
+Assert (Test-Path -LiteralPath $tempJournal) 'Save-Journal atomically creates target journal file'
+Assert ((Get-Content -LiteralPath $tempJournal -Raw | ConvertFrom-Json).Active -eq $true) 'Journal payload survives atomic round trip'
+Assert-ProtectedBackupPath (Join-Path $OutputDirectory 'nonexistent-subfolder')
+Assert $true 'Assert-ProtectedBackupPath safely ignores nonexistent paths'
 Write-Output "All $script:checks policy checks passed. No Windows policies were applied."

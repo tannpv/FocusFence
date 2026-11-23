@@ -1,9 +1,12 @@
 function Format-PolicySummary([string]$accountName, [string]$sid, [bool]$restrictNewApps, [bool]$blockUninstallers, [array]$blockedExecutables, [array]$packages, [array]$uninstallers, [array]$unresolved, [string]$root) {
-    return @(
+    $lines = @(
         "ACCOUNT: $accountName ($sid)",
         "Restrict new apps: $restrictNewApps", "Block registered uninstallers: $blockUninstallers",
         '', 'Either broad installer/uninstaller option blocks Windows Installer packages and msiexec, including installs, repairs and removals. Individual-app-only rules do not block MSI.',
-        '', 'INDIVIDUALLY DISABLED EXECUTABLES:', $blockedExecutables,
+        '', 'INDIVIDUALLY DISABLED EXECUTABLES:'
+    )
+    $lines += @($blockedExecutables | ForEach-Object { $_ })
+    $lines += @(
         'Enabling an app removes its individual deny rule only after you reapply. Other rules may still restrict it. Per-app rules match executable paths, not every component of a product.',
         'New-app restriction also blocks EXE/COM files outside Windows/Program Files, script files, and package identities not already installed for this user.',
         'Existing per-user desktop apps may stop working. Existing packaged-app identities (including updates/reinstalls) remain allowed.',
@@ -14,6 +17,8 @@ function Format-PolicySummary([string]$accountName, [string]$sid, [bool]$restric
         '', 'Application Identity will be started and set to automatic. Other accounts receive no deny rules.',
         "Backups: $root", '', "APPROVED PACKAGE IDENTITIES ($($packages.Count)):",
         ($packages | ForEach-Object { $_.Name }), '', 'BLOCKED REGISTERED UNINSTALLER EXECUTABLES:',
-        ($uninstallers | Select-Object -Unique), '', 'UNRESOLVED UNINSTALL COMMANDS (not specifically covered):', $unresolved
-    ) -join "`r`n"
+        ($uninstallers | Select-Object -Unique), '', 'UNRESOLVED UNINSTALL COMMANDS (not specifically covered):',
+        ($unresolved | ForEach-Object { $_ })
+    )
+    return $lines -join "`r`n"
 }
