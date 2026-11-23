@@ -58,6 +58,14 @@ internal static class Program
             ((Button)editor.FindName("SaveScheduleButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             if (store.State.Schedules[0].StartsAt != new TimeOnly(22, 0)) throw new Exception("Invalid UI input changed the schedule.");
             Console.WriteLine("PASS: Schedule editor saves valid input and rejects invalid time input without process access.");
+            var limitEditor = (FocusFence.App.TimeLimitEditor)window.FindName("TimeLimits");
+            ((TextBox)limitEditor.FindName("LimitName")).Text = "Roblox";
+            ((TextBox)limitEditor.FindName("LimitPath")).Text = @"C:\Games\roblox.exe";
+            ((TextBox)limitEditor.FindName("LimitMinutes")).Text = "60";
+            ((Button)limitEditor.FindName("SaveLimitButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+            if (store.State.TimeLimits.Count != 1 || store.State.TimeLimits[0].DailyMinutes != 60)
+                throw new Exception("Time limit editor did not persist the daily limit.");
+            Console.WriteLine("PASS: Time limit editor configures and persists per-app daily screen time limits.");
             var startupCheck = (CheckBox)window.FindName("StartupEnabled");
             var startupButton = (Button)window.FindName("SaveStartupButton");
             startupCheck.IsChecked = true;

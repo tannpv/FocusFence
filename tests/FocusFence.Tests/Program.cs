@@ -43,6 +43,7 @@ Check(state.Session is null, "Unlock ends session after delay");
 var temp = Path.Combine(Path.GetTempPath(), "FocusFence-tests-" + Guid.NewGuid());
 ScheduleChecks.Run(Check);
 PinChecks.Run(Check);
+TimeLimitChecks.Run(Check);
 foreach (var outcome in Enum.GetValues<ManagedPolicyOutcome>())
     Check(WindowsManagedAccountControl.InterpretExitCode((int)outcome) == outcome, $"Administrator protocol distinguishes {outcome}");
 Reject(() => WindowsManagedAccountControl.InterpretExitCode(0), "Ordinary process exit cannot falsely report policy applied");
