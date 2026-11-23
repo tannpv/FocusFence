@@ -1,7 +1,15 @@
+function Assert-ValidAccountName([string]$accountName) {
+    if ([string]::IsNullOrWhiteSpace($accountName) -or $accountName.IndexOfAny([char[]]@('\', '/', '"', "`r", "`n")) -ge 0) {
+        throw 'Enter a local Windows username, without a computer or domain prefix.'
+    }
+    return $accountName.Trim()
+}
+
 function Assert-AdminPolicyEnvironment([string]$action, [string]$accountName) {
     $principal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'Administrator credentials are required.' }
-    $account = Get-LocalUser -Name $accountName
+    $accountName = Assert-ValidAccountName $accountName
+    $account = try { Get-LocalUser -Name $accountName -ErrorAction Stop } catch { throw "Local user account '$accountName' does not exist." }
     $sid = $account.SID.Value
     $administrators = @(Get-LocalGroupMember -SID 'S-1-5-32-544' | ForEach-Object { $_.SID.Value })
     if ($action -ne 'Restore' -and (-not $account.Enabled -or $sid -in $administrators -or $sid -eq [Security.Principal.WindowsIdentity]::GetCurrent().User.Value)) { throw 'Select a different, enabled standard account. Administrator and current accounts are not supported.' }
