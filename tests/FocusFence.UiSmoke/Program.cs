@@ -65,7 +65,14 @@ internal static class Program
             ((Button)limitEditor.FindName("SaveLimitButton")).RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             if (store.State.TimeLimits.Count != 1 || store.State.TimeLimits[0].DailyMinutes != 60)
                 throw new Exception("Time limit editor did not persist the daily limit.");
-            Console.WriteLine("PASS: Time limit editor configures and persists per-app daily screen time limits.");
+            var appPicker = (ComboBox)limitEditor.FindName("AppPicker");
+            if (appPicker.Items.Count > 0)
+            {
+                appPicker.SelectedIndex = 0;
+                if (string.IsNullOrWhiteSpace(((TextBox)limitEditor.FindName("LimitName")).Text))
+                    throw new Exception("App picker selection did not automatically populate the app limit name.");
+            }
+            Console.WriteLine("PASS: Time limit editor configures and persists per-app daily screen time limits with app select list.");
             var startupCheck = (CheckBox)window.FindName("StartupEnabled");
             var startupButton = (Button)window.FindName("SaveStartupButton");
             startupCheck.IsChecked = true;

@@ -3,6 +3,10 @@
  <DockPanel Margin="12">
   <StackPanel DockPanel.Dock="Bottom" Margin="0,12,0,0">
    <TextBlock Text="Add or edit daily limit" FontWeight="SemiBold" Margin="0,0,0,6"/>
+   <DockPanel Margin="0,0,0,8">
+    <TextBlock Text="Select app:" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="11" Foreground="#62736A"/>
+    <ComboBox x:Name="AppPicker" DisplayMemberPath="Name" SelectionChanged="OnAppPicked" Padding="6" AutomationProperties.Name="Available applications select list"/>
+   </DockPanel>
    <WrapPanel Margin="0,0,0,6">
     <StackPanel Margin="0,0,8,0"><TextBlock Text="App name" FontSize="11"/><TextBox x:Name="LimitName" Width="140" AutomationProperties.Name="App limit name"/></StackPanel>
     <StackPanel Margin="0,0,8,0"><TextBlock Text="Executable path" FontSize="11"/><TextBox x:Name="LimitPath" Width="220" AutomationProperties.Name="App executable path"/></StackPanel>
