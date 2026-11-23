@@ -68,3 +68,19 @@
   - `FocusFence.Tests`: **85/85 checks PASSED** (100% green, including real process termination integration tests).
   - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 WPF tabs**.
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy validation).
+
+### Milestone 5: App Limit Select List (One-Click Selection)
+* **Date**: 2026-11-23
+* **Branch**: `feature/app-limit-select-list` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Enhanced `TimeLimitEditor.xaml` with an `AppPicker` ComboBox (`Select app:`) populated from discovered installed/running desktop applications via `IAppCatalog`.
+  - Selecting an application from the dropdown automatically populates both the application name and executable path, defaulting the daily limit to 60 minutes.
+  - Users no longer need to manually type application names or locate complex executable file paths.
+  - Enhanced `BrowseExecutable` to automatically infer and set the application name from the selected executable filename.
+  - Added UI smoke test asserting automated name/path population on app picker selection.
+* **Line Budget Compliance**: All production files remain strictly compliant with Rule #1 (`TimeLimitEditor.xaml` at 45 lines, `TimeLimitEditor.xaml.cs` at 125 lines).
+* **Comprehensive Verification**:
+  - `dotnet build -c Release`: 0 errors, 0 warnings.
+  - `FocusFence.Tests`: **85/85 checks PASSED** (100% green).
+  - `FocusFence.UiSmoke`: **11/11 checks PASSED** (including `AppPicker` automated population check).
+  - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED**.
