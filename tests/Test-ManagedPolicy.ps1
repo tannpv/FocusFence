@@ -41,11 +41,16 @@ Assert ($trimmedPath.Count -eq 1 -and $trimmedPath[0] -eq 'C:\Example\trimmed.ex
 Assert-Throws { Set-IdentityStartup 'InvalidMode' } 'Unknown service startup mode is rejected'
 Assert (-not (Test-SrpConfigurationContent @{} 0)) 'Empty SRP key does not indicate configured restrictions'
 Assert (-not (Test-SrpConfigurationContent @{ authenticodeenabled = 0 } 0)) 'Disabled certificate setting alone does not indicate configured restrictions'
+Assert (-not (Test-SrpConfigurationContent $null 0)) 'Null SRP dictionary does not indicate configured restrictions'
 Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = 0 } 1) 'SRP subkeys still prevent applying policy'
 Assert (Test-SrpConfigurationContent @{ DefaultLevel = 262144 } 0) 'SRP enforcement configuration still prevents applying policy'
 Assert (Test-SrpConfigurationContent @{ UnknownSetting = 0 } 0) 'Unknown SRP settings are rejected conservatively'
 Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = 1 } 0) 'Enabled certificate setting requires review'
 Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = '0' } 0) 'Unexpected registry value types require review'
+Assert (Test-SrpConfigurationContent @{ AuthenticodeEnabled = 0; PolicyScope = 0 } 0) 'Multiple SRP settings requiring review are rejected'
+Assert (-not (Test-ExistingSrpConfiguration '')) 'Empty SRP path returns false'
+Assert (-not (Test-ExistingSrpConfiguration '   ')) 'Whitespace SRP path returns false'
+Assert (-not (Test-ExistingSrpConfiguration 'HKLM:\Software\Policies\Microsoft\Windows\Safer\NonExistentPath_Test')) 'Nonexistent SRP registry path returns false'
 $windows = [Environment]::GetFolderPath('Windows')
 $programs = @([Environment]::GetFolderPath('ProgramFiles'))
 $packages = @([pscustomobject]@{ Name = 'Example.App'; Publisher = 'CN=Example & Company' })
