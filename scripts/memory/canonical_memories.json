@@ -140,5 +140,20 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: 87/87 unit tests, 11/11 UI smoke, 34/34 policy tests (100% green)",
     "tags": ["ux", "notifications", "time-limits", "child-screen-time", "lifecycle-modularization"]
+  },
+  {
+    "id": "mem_009_admin_submodule_testing_and_array_fix",
+    "domain": "desktop/windows/focusfence",
+    "category": "security_infrastructure",
+    "title": "Milestone 9: Admin Submodule Test Coverage & PowerShell Array Serialization Fix",
+    "timestamp": "2026-11-23T14:42:00Z",
+    "summary": "Expanded Test-ManagedPolicy.ps1 to directly validate newly modularized admin submodules (SummaryFormatter, BackupSecurity). Discovered and fixed a PowerShell nested array stringification bug in SummaryFormatter where blocked executables and unresolved paths rendered as System.Object[] in preview dialogs. Added 4 new automated policy checks (38 total).",
+    "files_affected": [
+      "src/FocusFence.App/Admin/SummaryFormatter.ps1",
+      "tests/Test-ManagedPolicy.ps1",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: 87 unit tests, 11 UI smoke, 38 policy tests (100% green)",
+    "tags": ["powershell", "testing", "applocker", "array-serialization", "submodule-coverage"]
   }
 ]

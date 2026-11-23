@@ -138,8 +138,20 @@
   - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 87 unit tests passed, 11 UI smoke tests passed, 34 policy tests passed.
   - Live resident application running under PID `8720`.
 
+### Milestone 9: Admin Submodule Test Coverage & PowerShell Nested Array Serialization Fix
+* **Date**: 2026-11-23
+* **Branch**: `test/expand-managed-policy-submodule-tests` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Expanded `tests/Test-ManagedPolicy.ps1` to test `SummaryFormatter.ps1` and `BackupSecurity.ps1` submodules directly (+4 new policy tests, total 38 checks).
+  - Uncovered and resolved PowerShell nested array bug in `SummaryFormatter.ps1` where `$blockedExecutables` and `$unresolved` evaluated to `"System.Object[]"` string representations when joined into summary text.
+  - Added assertions verifying atomic journal creation via `Save-Journal`, nonexistent backup path handling via `Assert-ProtectedBackupPath`, and exact string inclusion in `Format-PolicySummary`.
+  - Recompiled installer and deployed to user machine; resident application running under PID `25724`.
+* **Line Budget Compliance**: `SummaryFormatter.ps1` is 24 lines, `Test-ManagedPolicy.ps1` is 83 lines (both well within the $\le 120$ lines target).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 87 unit tests, 11 UI smoke tests, 38 policy tests.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (8 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (9 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (93 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.
