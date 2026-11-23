@@ -65,7 +65,14 @@ Assert ((Get-UninstallerExecutable '"C:\Program Files\Example\remove.exe" /quiet
 Assert ($null -eq (Get-UninstallerExecutable 'C:\Program Files\Example\remove.exe /quiet' 'C:\Users\Test')) 'Ambiguous unquoted paths are reported instead of guessed'
 Assert ((Get-UninstallerExecutable '"%LOCALAPPDATA%\Example\remove.exe"' 'C:\Users\Target') -eq 'C:\Users\Target\AppData\Local\Example\remove.exe') 'Profile variables resolve for the target account'
 Assert ((Get-UninstallerExecutable '"%localappdata%\Example\remove.exe"' 'C:\Users\Target') -eq 'C:\Users\Target\AppData\Local\Example\remove.exe') 'Lowercase profile variables never resolve against the administrator profile'
+Assert ((Get-UninstallerExecutable '"C:/Program Files/Example/remove.exe" /quiet' 'C:\Users\Test') -eq 'C:\Program Files\Example\remove.exe') 'Uninstaller paths with forward slashes are normalized'
+Assert ((Get-UninstallerExecutable '"%USERPROFILE%\Example\remove.exe"' 'C:\Users\Target') -eq 'C:\Users\Target\Example\remove.exe') 'USERPROFILE variable resolves for target account'
+Assert ((Get-UninstallerExecutable '"%APPDATA%\Example\remove.exe"' 'C:\Users\Target') -eq 'C:\Users\Target\AppData\Roaming\Example\remove.exe') 'APPDATA variable resolves for target account'
+Assert ($null -eq (Get-UninstallerExecutable '   ' 'C:\Users\Target')) 'Whitespace uninstaller command returns null'
+Assert ($null -eq (Get-UninstallerExecutable '"C:\Example\remove.bat"' 'C:\Users\Target')) 'Non-executable uninstaller command returns null'
 Assert ($null -eq (Get-UninstallerExecutable 'msiexec.exe /x {example}' 'C:\Users\Target')) 'Relative command paths are not guessed'
+Assert-Throws { New-ManagedPolicy -Sid 'S-1-5-32-544' -WindowsDirectory $windows -ProgramDirectories $programs -RestrictNewApps $true -BlockUninstallers $false } 'Non-local user SID is rejected by New-ManagedPolicy'
+Assert-Throws { New-ManagedPolicy -Sid 'InvalidSid' -WindowsDirectory $windows -ProgramDirectories $programs -RestrictNewApps $true -BlockUninstallers $false } 'Malformed SID is rejected by New-ManagedPolicy'
 [xml]$copy = $policy.OuterXml
 $copy.DocumentElement.AppendChild($copy.DocumentElement.FirstChild) | Out-Null
 Assert ((ConvertTo-PolicySignature $policy) -eq (ConvertTo-PolicySignature $copy)) 'Policy comparison ignores collection ordering'
