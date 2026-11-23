@@ -150,8 +150,20 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 87 unit tests, 11 UI smoke tests, 38 policy tests.
 
+### Milestone 10: Contabo Milvus Dotenv Auto-Configuration & Contract Verification
+* **Date**: 2026-11-23
+* **Branch**: `feature/milvus-dotenv-support` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Created `.env.example` defining contract for Contabo Milvus Vector Database credentials (`MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_TOKEN`, `MILVUS_COLLECTION`).
+  - Enhanced `scripts/memory/milvus_sync.py` with multi-path dotenv auto-loader checking workspace root, cwd, and script directories.
+  - Retained strict zero-debt line budget: `milvus_sync.py` is 111 lines ($\le 120$ lines target).
+  - Validated all 10 canonical milestones via `milvus_sync.py status`.
+* **Line Budget Compliance**: All 65 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 87 unit tests, 11 UI smoke tests, 38 policy tests, 65 line budget checks.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (9 canonical milestone records).
-* **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (93 lines, Rule #1 compliant).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (10 canonical milestone records).
+* **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

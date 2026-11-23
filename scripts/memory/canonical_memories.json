@@ -155,5 +155,20 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: 87 unit tests, 11 UI smoke, 38 policy tests (100% green)",
     "tags": ["powershell", "testing", "applocker", "array-serialization", "submodule-coverage"]
+  },
+  {
+    "id": "mem_010_milvus_dotenv_configuration",
+    "domain": "infrastructure/memory/milvus",
+    "category": "developer_tooling",
+    "title": "Milestone 10: Contabo Milvus Dotenv Auto-Configuration & Verification",
+    "timestamp": "2026-11-23T14:48:00Z",
+    "summary": "Added .env.example contract template and automatic dotenv environment loader to milvus_sync.py. Searches current working directory, workspace root, and script directory for credentials without external dependency overhead. Keeps milvus_sync.py under strict line budget (<120 lines).",
+    "files_affected": [
+      ".env.example",
+      "scripts/memory/milvus_sync.py",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "python scripts/memory/milvus_sync.py status, tools/Verify-AllGates.ps1: 5/5 gates passed (100% green)",
+    "tags": ["memory", "milvus", "contabo", "dotenv", "vector-sync", "developer-tooling"]
   }
 ]
