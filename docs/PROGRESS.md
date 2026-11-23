@@ -109,8 +109,24 @@
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED**.
   - `Build-Installer.ps1`: Inno Setup installer compiled in 34.6s with zero errors.
 
+### Milestone 7: Automated Machine Quality Gates & Unified Verification Runner
+* **Date**: 2026-11-23
+* **Branch**: `feature/automated-harness-gates` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Implemented `tests/Test-LineBudgets.ps1` (42 lines): An automated machine gate that scans all 65 source and script files, failing if any file exceeds the 150-line ceiling and warning if any file exceeds the 120-line target.
+  - Implemented `tools/Verify-AllGates.ps1` (32 lines): A unified harness verification runner that sequentially executes all 5 quality gates in a single automated step:
+    1. Gate 1: Rule #1 Line Budget Verification (`Test-LineBudgets.ps1`)
+    2. Gate 2: Release Solution Build (`dotnet build FocusFence.sln -c Release -m:1`)
+    3. Gate 3: Core & Process Integration Tests (`FocusFence.Tests.exe FocusFence.Probe.exe` — 85 checks)
+    4. Gate 4: WPF UI Smoke Suite (`FocusFence.UiSmoke.exe` — 11 checks across 7 tabs)
+    5. Gate 5: PowerShell AppLocker Policy Tests (`Test-ManagedPolicy.ps1` — 34 checks)
+  - Verified 100% green execution across all 5 gates.
+* **Line Budget Compliance**: Both new files are <= 42 lines, strictly compliant with Rule #1.
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)**.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (6 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (7 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (93 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

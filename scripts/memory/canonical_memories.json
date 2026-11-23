@@ -107,5 +107,20 @@
     ],
     "verification": "FocusFence.Tests (85/85), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34), Build-Installer.ps1 (34.6s)",
     "tags": ["modularization", "clean-architecture", "line-budget", "zero-debt", "powershell-admin", "test-harness"]
+  },
+  {
+    "id": "mem_007_automated_harness_gates",
+    "domain": "desktop/windows/focusfence",
+    "category": "harness_automation",
+    "title": "Milestone 7: Automated Machine Quality Gates & Unified Verification Runner",
+    "timestamp": "2026-11-23T14:26:00Z",
+    "summary": "Implemented automated machine quality gates for AI Harness Rule #1: tests/Test-LineBudgets.ps1 (42 lines) enforces zero files > 150 lines and ratchets the target budget to <= 120 lines across all 65 files. Created tools/Verify-AllGates.ps1 (32 lines) orchestrating Line Budgets, Solution Build, Core Integration Tests, WPF UI Smoke Suite, and AppLocker Policy Tests in a single zero-debt machine gate.",
+    "files_affected": [
+      "tests/Test-LineBudgets.ps1",
+      "tools/Verify-AllGates.ps1",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: 5/5 quality gates passed 100% green",
+    "tags": ["machine-gates", "harness-runner", "automated-testing", "line-budget-guard", "ci-cd"]
   }
 ]
