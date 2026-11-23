@@ -32,3 +32,22 @@
   - `FocusFence.Tests`: **83/83 checks PASSED** (100% green, +13 new unit checks).
   - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 WPF tabs** (including Time limits).
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy validation).
+
+### Milestone 3: Performance Optimization & UI Hang Elimination
+* **Date**: 2026-11-23
+* **Branch**: `fix/prevent-ui-hangs-and-optimize-polling` (Merged via `--no-ff` into `main`)
+* **Root Cause Diagnostics**:
+  1. `Process.MainModule` internally calls `EnumProcessModules`. In games or apps with anti-cheat hooks, virtualized sandboxes, or loading screens, `EnumProcessModules` blocks indefinitely on the target's loader lock. Because this was invoked on the UI thread during polling ticks, FocusFence hung.
+  2. Sequential triple-blocking (`localApps`, `active.Apps`, `limitBlocked`) in `MainWindow.xaml.cs` triggered up to 3 separate enumerations of all 300+ system processes every poll cycle.
+  3. `ExecutableIconConverter` lacked caching, forcing synchronous disk file reads and Shell API icon extraction on every list re-render.
+* **Architectural Fixes**:
+  - `FocusFence.Windows/WindowsForegroundTracker.cs` (55 lines) — Converted to non-blocking Win32 `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)` + `QueryFullProcessImageName` + `ProcessIdToSessionId`. Never blocks on target process loader locks or anti-cheat hooks.
+  - `FocusFence.Windows/WindowsAppMonitor.cs` (90 lines) — Updated process path inspection to `QueryFullProcessImageName` with safe fallback.
+  - `FocusFence.App/ExecutableIconConverter.cs` (40 lines) — Added thread-safe `ConcurrentDictionary<string, ImageSource?>` caching of frozen `BitmapSource` instances to eliminate repetitive synchronous disk I/O.
+  - `FocusFence.App/MainWindow.xaml.cs` (297 lines) — Batched manual, scheduled, and time-limit blocked targets into a single deduplicated pass per tick, and throttled UI list re-rendering.
+* **Line Budget Compliance**: All files within Rule #1 budgets (`< 120 lines` target, `< 150 lines` limit; `MainWindow.xaml.cs` net neutral).
+* **Comprehensive Verification**:
+  - `dotnet build -c Release`: 0 errors, 0 warnings.
+  - `FocusFence.Tests`: **83/83 checks PASSED** (100% green).
+  - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 tabs**.
+  - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy checks).
