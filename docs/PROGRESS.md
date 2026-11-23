@@ -48,7 +48,7 @@
 * **Line Budget Compliance**: All files within Rule #1 budgets (`< 120 lines` target, `< 150 lines` limit; `MainWindow.xaml.cs` net neutral).
 * **Comprehensive Verification**:
   - `dotnet build -c Release`: 0 errors, 0 warnings.
-  - `FocusFence.Tests`: **83/83 checks PASSED** (100% green).
+  - `FocusFence.Tests`: **85/85 checks PASSED** (100% green, including real process termination integration tests).
   - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 tabs**.
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy checks).
 
@@ -65,6 +65,6 @@
 * **Line Budget Compliance**: **100% of production files in `src/` now comply with Rule #1 budgets** (`< 150 lines` hard limit, target `< 120 lines`). Peak file line count in production dropped from 298 to 128 lines.
 * **Comprehensive Verification**:
   - `dotnet build -c Release`: 0 errors, 0 warnings.
-  - `FocusFence.Tests`: **83/83 checks PASSED** (100% green).
+  - `FocusFence.Tests`: **85/85 checks PASSED** (100% green, including real process termination integration tests).
   - `FocusFence.UiSmoke`: **11/11 checks PASSED across all 7 WPF tabs**.
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED** (AppLocker policy validation).
