@@ -1,0 +1,86 @@
+[
+  {
+    "id": "mem_001_applocker_schema_fix",
+    "domain": "desktop/windows/focusfence",
+    "category": "security_infrastructure",
+    "title": "Milestone 1: AppLocker Schema Bugfix & AI Harness Initialization",
+    "timestamp": "2026-11-23T10:30:00Z",
+    "summary": "Fixed AppLocker XML schema validation in PolicyBuilder.ps1 where HighSection='*' violated XSD pattern ([0-9]{1,5}.){3}[0-9]{1,5}. Corrected to 65535.65535.65535.65535. Initialized living harness memory at PROGRESS.md and GEMINI.md.",
+    "files_affected": [
+      "src/FocusFence.App/Admin/PolicyBuilder.ps1",
+      "docs/PROGRESS.md",
+      "GEMINI.md"
+    ],
+    "verification": "FocusFence.Tests (70/70), UiSmoke (10/10), Test-ManagedPolicy.ps1 (34/34)",
+    "tags": ["applocker", "xsd-schema", "windows", "powershell", "harness-bootstrap"]
+  },
+  {
+    "id": "mem_002_child_app_time_limits",
+    "domain": "desktop/windows/focusfence",
+    "category": "feature_development",
+    "title": "Milestone 2: Child App Time Tracking & Daily Allowance Enforcement",
+    "timestamp": "2026-11-23T10:35:00Z",
+    "summary": "Implemented active foreground window tracking (IForegroundTracker, WindowsForegroundTracker), pure domain logic in TimeLimitTracker with 5m warning notification, automatic termination upon limit exhaustion, parent PIN bonus time (+15m/+30m), midnight rollover, and 14-day history pruning. Created TimeLimitEditor WPF UI and 13 unit tests.",
+    "files_affected": [
+      "src/FocusFence.Core/IForegroundTracker.cs",
+      "src/FocusFence.Core/TimeLimitModels.cs",
+      "src/FocusFence.Core/TimeLimitTracker.cs",
+      "src/FocusFence.Windows/WindowsForegroundTracker.cs",
+      "src/FocusFence.App/TimeLimitEditor.xaml",
+      "src/FocusFence.App/TimeLimitEditor.xaml.cs",
+      "tests/FocusFence.Tests/TimeLimitChecks.cs"
+    ],
+    "verification": "FocusFence.Tests (83/83), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34)",
+    "tags": ["time-limits", "screen-time", "child-protection", "foreground-tracking", "parent-pin"]
+  },
+  {
+    "id": "mem_003_performance_and_hang_elimination",
+    "domain": "desktop/windows/focusfence",
+    "category": "performance_optimization",
+    "title": "Milestone 3: UI Hang Elimination via Non-Blocking Win32 APIs & Icon Caching",
+    "timestamp": "2026-11-23T10:47:00Z",
+    "summary": "Diagnosed UI thread lockup root causes: Process.MainModule blocked on loader locks in games/processes with anti-cheat hooks. Replaced with Win32 OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION) + QueryFullProcessImageName + ProcessIdToSessionId. Consolidated triple process sweeps in Tick() into a single batched pass. Added ConcurrentDictionary icon cache in ExecutableIconConverter to stop synchronous disk I/O during WPF renders.",
+    "files_affected": [
+      "src/FocusFence.Windows/WindowsForegroundTracker.cs",
+      "src/FocusFence.Windows/WindowsAppMonitor.cs",
+      "src/FocusFence.App/ExecutableIconConverter.cs",
+      "src/FocusFence.App/MainWindow.xaml.cs"
+    ],
+    "verification": "FocusFence.Tests (83/83), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34)",
+    "tags": ["performance", "anti-hang", "win32-api", "queryfullprocessimagename", "caching"]
+  },
+  {
+    "id": "mem_004_progressive_modularization",
+    "domain": "desktop/windows/focusfence",
+    "category": "code_refactoring",
+    "title": "Milestone 4: Progressive Modularization & Rule #1 Line Budget Ratchet",
+    "timestamp": "2026-11-23T10:55:00Z",
+    "summary": "Deconstructed MainWindow.xaml.cs (298 lines) into 4 cohesive submodules: MainWindow.xaml.cs (128 lines), MainWindow.Blocklists.cs (88 lines), MainWindow.Session.cs (47 lines), and MainWindow.Settings.cs (83 lines). Added real process termination integration tests with FocusFence.Probe.exe. 100% of production files now adhere to Rule #1 budget (<150 hard ceiling, <120 target).",
+    "files_affected": [
+      "src/FocusFence.App/MainWindow.xaml.cs",
+      "src/FocusFence.App/MainWindow.Blocklists.cs",
+      "src/FocusFence.App/MainWindow.Session.cs",
+      "src/FocusFence.App/MainWindow.Settings.cs",
+      "tests/FocusFence.Tests/Program.cs",
+      "README.md"
+    ],
+    "verification": "FocusFence.Tests (85/85), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34)",
+    "tags": ["clean-architecture", "submodule-decomposition", "line-budget", "rule1-ratchet"]
+  },
+  {
+    "id": "mem_005_app_limit_select_list",
+    "domain": "desktop/windows/focusfence",
+    "category": "ux_feature",
+    "title": "Milestone 5: Application Select List for One-Click Limit Configuration",
+    "timestamp": "2026-11-23T13:54:00Z",
+    "summary": "Enhanced TimeLimitEditor with an AppPicker ComboBox listing discovered desktop and running applications via IAppCatalog. Selecting an application auto-populates the app name and executable path, defaulting the daily limit to 60 minutes. Eliminated manual typing of names and paths. Verified via UI smoke test.",
+    "files_affected": [
+      "src/FocusFence.App/TimeLimitEditor.xaml",
+      "src/FocusFence.App/TimeLimitEditor.xaml.cs",
+      "src/FocusFence.App/MainWindow.xaml.cs",
+      "tests/FocusFence.UiSmoke/Program.cs"
+    ],
+    "verification": "FocusFence.Tests (85/85), UiSmoke (11/11), Test-ManagedPolicy.ps1 (34/34)",
+    "tags": ["ux", "time-limits", "app-picker", "combobox", "catalog-discovery"]
+  }
+]
