@@ -62,7 +62,7 @@ try {
     $summary = Format-PolicySummary $AccountName $sid ([bool]$RestrictNewApps) ([bool]$BlockUninstallers) $blockedExecutables $packages $inventory.Uninstallers $inventory.Unresolved $root
     if (-not (Confirm-Preview $summary)) { exit $ExitCodes.Cancelled }
     if ((ConvertTo-PolicySignature ([xml](Get-AppLockerPolicy -Local -Xml))) -ne (ConvertTo-PolicySignature $current)) { throw 'Policy changed during review. Retry from the current policy.' }
-    $freshAccount = Get-LocalUser -Name $AccountName
+    $freshAccount = try { Get-LocalUser -Name $AccountName -ErrorAction Stop } catch { throw 'Account was removed during review. Retry with an enabled standard account.' }
     if (-not $freshAccount.Enabled -or $freshAccount.SID.Value -ne $sid -or $sid -in @(Get-LocalGroupMember -SID 'S-1-5-32-544' | ForEach-Object { $_.SID.Value })) { throw 'Account changed during review. Retry with an enabled standard account.' }
     $service = Get-CimInstance Win32_Service -Filter "Name='AppIDSvc'"
     $original = if ($journal -and $journal.Active) { $journal.OriginalPolicy } else { $current.OuterXml }
