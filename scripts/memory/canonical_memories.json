@@ -235,5 +235,20 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
     "tags": ["admin-preflight", "account-validation", "boundary-parity", "powershell-testing", "line-budget"]
+  },
+  {
+    "id": "mem_015_uninstaller_resolution_and_policy_hardening",
+    "domain": "desktop/windows/focusfence",
+    "category": "security_infrastructure",
+    "title": "Milestone 15: Uninstaller Path Resolution Hardening & Policy Test Expansion",
+    "timestamp": "2026-11-23T15:07:00Z",
+    "summary": "Hardened post-review account existence validation in ManageAccount.ps1 against concurrent deletion. Expanded Test-ManagedPolicy.ps1 with 7 new automated checks (+7 checks, 58 total): forward slash path normalization, %USERPROFILE% and %APPDATA% expansion, whitespace rejection, non-exe command rejection, non-local SID rejection, and malformed SID rejection. 100% compliant across 67 files.",
+    "files_affected": [
+      "src/FocusFence.App/Admin/ManageAccount.ps1",
+      "tests/Test-ManagedPolicy.ps1",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
+    "tags": ["applocker", "uninstaller-resolution", "policy-hardening", "powershell-testing", "line-budget"]
   }
 ]

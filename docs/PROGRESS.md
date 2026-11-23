@@ -215,8 +215,25 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (88 checks), WPF UI Smoke (11 checks), AppLocker Policy (51 checks), Canonical Memory (14 records).
 
+### Milestone 15: Uninstaller Path Resolution Hardening & Policy Test Expansion
+* **Date**: 2026-11-23
+* **Branch**: `feature/uninstaller-resolution-and-policy-hardening` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Hardened post-review account existence validation in [ManageAccount.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/Admin/ManageAccount.ps1) (98 lines) against concurrent user deletion.
+  - Expanded [Test-ManagedPolicy.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/tests/Test-ManagedPolicy.ps1) (107 lines) with 7 new automated test assertions (**58 total policy tests**):
+    1. Forward slash path normalization (`C:/App/uninst.exe` -> `C:\App\uninst.exe`).
+    2. Per-user `%USERPROFILE%` variable expansion without admin leakage.
+    3. Per-user `%APPDATA%` variable expansion.
+    4. Safe rejection of whitespace-only uninstaller commands.
+    5. Safe rejection of non-executable uninstaller commands (`.bat`, `.cmd`).
+    6. Strict rejection of non-local user SIDs in `New-ManagedPolicy`.
+    7. Strict rejection of malformed SID strings in `New-ManagedPolicy`.
+* **Line Budget Compliance**: All 67 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (88 checks), WPF UI Smoke (11 checks), AppLocker Policy (58 checks), Canonical Memory (15 records).
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (14 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (15 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.
