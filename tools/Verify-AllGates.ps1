@@ -27,6 +27,10 @@ Write-Host "`n=== Gate 5: PowerShell AppLocker Policy Tests ===" -ForegroundColo
 & powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Root 'tests\Test-ManagedPolicy.ps1')
 if ($LASTEXITCODE -ne 0) { throw "Gate 5 (Managed Policy) failed." }
 
+Write-Host "`n=== Gate 6: Canonical Vector Memory & Milvus Gate ===" -ForegroundColor Cyan
+& powershell -NoProfile -ExecutionPolicy Bypass -File (Join-Path $Root 'tests\Test-CanonicalMemories.ps1')
+if ($LASTEXITCODE -ne 0) { throw "Gate 6 (Canonical Memories) failed." }
+
 Write-Host "`n=======================================================" -ForegroundColor Green
-Write-Host " ALL 5 HARNESS QUALITY GATES PASSED (100% GREEN)       " -ForegroundColor Green
+Write-Host " ALL 6 HARNESS QUALITY GATES PASSED (100% GREEN)       " -ForegroundColor Green
 Write-Host "=======================================================`n" -ForegroundColor Green
