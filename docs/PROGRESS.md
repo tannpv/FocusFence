@@ -162,8 +162,21 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 87 unit tests, 11 UI smoke tests, 38 policy tests, 65 line budget checks.
 
+### Milestone 11: Daily Time Limit Enable/Disable Toggle & Automatic 14-Day History Pruning
+* **Date**: 2026-11-23
+* **Branch**: `feature/time-limit-toggle-and-retention` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Implemented in-place Enable/Disable toggling for daily screen time limits in `TimeLimitEditor` (row button and form checkbox) with parent PIN authentication and status text/color states.
+  - Added self-contained automatic 14-day history pruning on calendar day rollover in `TimeLimitTracker` to eliminate unbounded JSON storage growth.
+  - Deconstructed `TimeLimitRow` into dedicated submodule [TimeLimitRow.cs](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/TimeLimitRow.cs) (6 lines), reducing `TimeLimitEditor.xaml.cs` to 105 lines ($\le 120$ lines target).
+  - Added unit test assertions in `TimeLimitChecks.cs` (+1 check, 88 total unit tests) and UI smoke verification in `Program.cs`.
+  - Recompiled installer (35.6s) and updated live resident process running under PID `13880`.
+* **Line Budget Compliance**: All 66 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 5 GATES PASSED (100% GREEN)** — 88 unit tests, 11 UI smoke tests, 38 policy tests, 66 line budget checks.
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (10 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (11 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

@@ -170,5 +170,24 @@
     ],
     "verification": "python scripts/memory/milvus_sync.py status, tools/Verify-AllGates.ps1: 5/5 gates passed (100% green)",
     "tags": ["memory", "milvus", "contabo", "dotenv", "vector-sync", "developer-tooling"]
+  },
+  {
+    "id": "mem_011_time_limit_toggle_and_auto_retention",
+    "domain": "desktop/windows/focusfence",
+    "category": "feature_development",
+    "title": "Milestone 11: Daily Time Limit Enable/Disable Toggle & Automatic 14-Day History Pruning",
+    "timestamp": "2026-11-23T14:54:00Z",
+    "summary": "Implemented in-place Enable/Disable toggling for daily screen time limits in TimeLimitEditor (both list row button and form checkbox) with parent PIN authentication and dynamic UI state colors. Added self-contained automatic 14-day history pruning on calendar day rollover in TimeLimitTracker to prevent unbounded JSON store growth. Decomposed TimeLimitRow into a dedicated model (6 lines) maintaining 100% compliance across 66 files (all <= 120 lines).",
+    "files_affected": [
+      "src/FocusFence.Core/TimeLimitTracker.cs",
+      "src/FocusFence.App/TimeLimitEditor.xaml",
+      "src/FocusFence.App/TimeLimitEditor.xaml.cs",
+      "src/FocusFence.App/TimeLimitRow.cs",
+      "tests/FocusFence.Tests/TimeLimitChecks.cs",
+      "tests/FocusFence.UiSmoke/Program.cs",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: 88 unit tests, 11 UI smoke, 38 policy tests, 66 line budget checks (100% green)",
+    "tags": ["time-limits", "ux-toggle", "screen-time", "retention-pruning", "clean-architecture", "line-budget"]
   }
 ]
