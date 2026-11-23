@@ -204,8 +204,19 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (88 checks), WPF UI Smoke (11 checks), AppLocker Policy (43 checks), Canonical Memory (13 records).
 
+### Milestone 14: Admin Preflight Account Validation & Policy Test Expansion
+* **Date**: 2026-11-23
+* **Branch**: `feature/admin-preflight-account-validation` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Extracted `Assert-ValidAccountName` in [AdminPreflight.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/Admin/AdminPreflight.ps1) (60 lines) achieving 100% boundary parity with C# `ManagedAccountRequest.cs`.
+  - Added strict trimming, rejection of domain qualification (`\`, `/`), special characters, and wrapped `Get-LocalUser` with descriptive existence errors.
+  - Dot-sourced `AdminPreflight.ps1` in [Test-ManagedPolicy.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/tests/Test-ManagedPolicy.ps1) (100 lines) and added 8 new automated test assertions (**51 total policy tests**).
+* **Line Budget Compliance**: All 67 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (88 checks), WPF UI Smoke (11 checks), AppLocker Policy (51 checks), Canonical Memory (14 records).
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (13 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (14 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

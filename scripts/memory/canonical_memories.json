@@ -220,5 +220,20 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
     "tags": ["harness-automation", "quality-gate", "milvus", "canonical-memory", "ci-cd"]
+  },
+  {
+    "id": "mem_014_admin_preflight_account_validation",
+    "domain": "desktop/windows/focusfence",
+    "category": "security_infrastructure",
+    "title": "Milestone 14: Admin Preflight Account Validation & Policy Test Expansion",
+    "timestamp": "2026-11-23T15:03:00Z",
+    "summary": "Introduced Assert-ValidAccountName in AdminPreflight.ps1 ensuring 100% boundary parity with C# ManagedAccountRequest. Validates account names for whitespace trimming, rejects domain prefixes and special characters, and provides descriptive errors for nonexistent users. Expanded Test-ManagedPolicy.ps1 to 51 checks (+8 new checks). 100% compliant across 67 files.",
+    "files_affected": [
+      "src/FocusFence.App/Admin/AdminPreflight.ps1",
+      "tests/Test-ManagedPolicy.ps1",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
+    "tags": ["admin-preflight", "account-validation", "boundary-parity", "powershell-testing", "line-budget"]
   }
 ]
