@@ -5,6 +5,7 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\RequestParser.ps1')
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\SummaryFormatter.ps1')
 . (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\BackupSecurity.ps1')
+. (Join-Path $PSScriptRoot '..\src\FocusFence.App\Admin\AdminPreflight.ps1')
 $script:checks = 0
 function Assert($condition, [string]$message) {
     if (-not $condition) { throw "FAIL: $message" }
@@ -14,6 +15,11 @@ function Assert-Throws([scriptblock]$action, [string]$message) {
     $rejected = $false
     try { & $action } catch { $rejected = $true }
     Assert $rejected $message
+}
+Assert ((Assert-ValidAccountName 'StandardKid') -eq 'StandardKid') 'Account name validator accepts clean username'
+Assert ((Assert-ValidAccountName '  StandardKid  ') -eq 'StandardKid') 'Account name validator trims whitespace'
+foreach ($badAccount in @('', '   ', 'DOMAIN\User', 'DOMAIN/User', 'User"Name', "User`nName")) {
+    Assert-Throws { Assert-ValidAccountName $badAccount } 'Invalid account name is rejected'
 }
 $sid = if ($TargetAccount) { (Get-LocalUser -Name $TargetAccount).SID.Value } else { [Security.Principal.WindowsIdentity]::GetCurrent().User.Value }
 function Encode-Request([string]$json) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json)) }
