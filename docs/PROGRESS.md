@@ -84,3 +84,9 @@
   - `FocusFence.Tests`: **85/85 checks PASSED** (100% green).
   - `FocusFence.UiSmoke`: **11/11 checks PASSED** (including `AppPicker` automated population check).
   - `Test-ManagedPolicy.ps1`: **34/34 checks PASSED**.
+
+### Persistent Vector Memory & Contabo Milvus Sync
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (5 canonical milestone records).
+* **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (93 lines, Rule #1 compliant).
+* **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
+* **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.
