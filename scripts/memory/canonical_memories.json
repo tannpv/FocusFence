@@ -250,5 +250,20 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
     "tags": ["applocker", "uninstaller-resolution", "policy-hardening", "powershell-testing", "line-budget"]
+  },
+  {
+    "id": "mem_016_json_state_store_timelimit_validation",
+    "domain": "desktop/windows/focusfence",
+    "category": "storage_infrastructure",
+    "title": "Milestone 16: JsonStateStore Time Limit Validation & Storage Test Expansion",
+    "timestamp": "2026-11-23T15:10:00Z",
+    "summary": "Hardened JsonStateStore.cs with strict validation of TimeLimits and DailyUsages on load: rejects corrupted minute allowances, invalid executable paths, and duplicate executable path registrations. Expanded FocusFence.Tests/StorageChecks.cs with 3 new automated test assertions (+3 checks, 91 total integration checks). 100% compliant across 67 files.",
+    "files_affected": [
+      "src/FocusFence.Windows/JsonStateStore.cs",
+      "tests/FocusFence.Tests/StorageChecks.cs",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
+    "tags": ["storage", "json-store", "time-limits", "validation-guards", "integration-tests", "line-budget"]
   }
 ]
