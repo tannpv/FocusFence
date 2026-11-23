@@ -23,6 +23,7 @@
     <DockPanel Grid.Row="4"><Button DockPanel.Dock="Right" Content="Add running app" Click="AddRunning"/><ComboBox x:Name="Running" DisplayMemberPath="Name" Padding="8" Margin="0,6,8,6" AutomationProperties.Name="Running applications"/></DockPanel>
    </Grid></TabItem>
    <TabItem Header="  Schedules  "><local:ScheduleEditor x:Name="Schedules"/></TabItem>
+   <TabItem Header="  Time limits  "><local:TimeLimitEditor x:Name="TimeLimits"/></TabItem>
    <TabItem x:Name="ManagedAccountTab" Header="  Managed account  "><local:ManagedAccountEditor x:Name="ManagedAccount"/></TabItem>
    <TabItem Header="  Settings  "><StackPanel Margin="12">
     <Button Content="Set / change PIN" Click="ConfigurePin" HorizontalAlignment="Left"/>

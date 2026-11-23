@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     private readonly AppState state;
     private readonly SessionController session;
     private readonly PinAuthentication authentication;
+    private readonly TimeLimitTracker timeLimits;
     private readonly DispatcherTimer timer;
     private readonly Forms.NotifyIcon tray;
     private readonly System.Drawing.Icon trayIcon;
@@ -29,16 +30,18 @@ public partial class MainWindow : Window
     private bool initialized;
     private Blocklist? Selected => Lists.SelectedItem as Blocklist;
 
-    public MainWindow(IStateStore store, IAppMonitor monitor, ITargetPolicy policy, IStartupRegistration? startup = null, bool background = false, IManagedAccountControl? managedAccount = null, IAppCatalog? catalog = null)
+    public MainWindow(IStateStore store, IAppMonitor monitor, ITargetPolicy policy, IStartupRegistration? startup = null, bool background = false, IManagedAccountControl? managedAccount = null, IAppCatalog? catalog = null, IForegroundTracker? foreground = null)
     {
         InitializeComponent();
         this.store = store; this.monitor = monitor; this.policy = policy;
         this.startup = startup;
         state = store.Load(); session = new(state, TimeProvider.System);
         authentication = new(state, store, TimeProvider.System);
+        timeLimits = new(state, TimeProvider.System, foreground ?? new FocusFence.Windows.WindowsForegroundTracker());
         Minutes.Text = state.SessionMinutes.ToString(); Delay.Text = state.UnlockSeconds.ToString();
         RefreshLists();
         Schedules.Initialize(state, Save, CanEdit, message => Status.Text = message);
+        TimeLimits.Initialize(state, timeLimits, Save, EnsureAuthenticated, message => Status.Text = message);
         ManagedAccount.Initialize(managedAccount, state, EnsureAuthenticated, Save);
         AppAccess.Initialize(state, catalog, policy, Save, EnsureAuthenticated);
         ManagedAccount.DraftChanged += (_, _) => AppAccess.RefreshSummary();
@@ -254,6 +257,18 @@ public partial class MainWindow : Window
                 var errors = await Task.Run(() => monitor.Block(active.Apps, active.EndsAt));
                 if (errors.Count > 0) Status.Text = string.Join(" ", errors);
             }
+            timeLimits.RecordActiveTime(1);
+            var limitEval = timeLimits.Evaluate();
+            foreach (var warning in limitEval.Warnings)
+                tray.ShowBalloonTip(Defaults.NotificationMilliseconds, "Daily limit warning", $"{warning.Name} has 5 minutes remaining today.", Forms.ToolTipIcon.Warning);
+            var limitBlocked = limitEval.Blocked.Where(a => policy.GetRejection(a.Path) is null).ToArray();
+            if (limitBlocked.Length > 0)
+            {
+                var limitErrors = await Task.Run(() => monitor.Block(limitBlocked, DateTimeOffset.MaxValue));
+                if (limitErrors.Count > 0) Status.Text = string.Join(" ", limitErrors);
+            }
+            if (Pages.SelectedItem is TabItem { Header: string h } && h.Contains("Time limits"))
+                TimeLimits.Refresh();
         }
         catch (Exception ex) { Status.Text = "Blocking needs attention: " + ex.Message; }
         finally { polling = false; }

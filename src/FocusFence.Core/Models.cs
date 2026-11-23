@@ -28,6 +28,8 @@ public sealed class AppState
     public List<AppTarget> LocalDisabledApps { get; set; } = [];
     public bool UseCurrentAccount { get; set; }
     public ManagedPolicyDraft ManagedDraft { get; set; } = new();
+    public List<AppTimeLimit> TimeLimits { get; set; } = [];
+    public List<AppDailyUsage> DailyUsages { get; set; } = [];
 }
 
 public interface IStateStore
