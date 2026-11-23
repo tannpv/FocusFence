@@ -18,6 +18,12 @@ dotnet run --project src/FocusFence.App
 
 ## Build and verify
 
+To run all automated quality gates (Rule #1 Line Budgets, Solution Build, Integration Tests, UI Smoke Suite, and Policy Tests) in a single step:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Verify-AllGates.ps1
+```
+
 To build the installer, install Inno Setup 6 and run `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/Build-Installer.ps1`. The build reads the app version from `Properties/Version.props` and writes a self-contained Windows x64 installer and SHA-256 checksum to `artifacts/installer/output`.
 
 ```powershell
@@ -74,6 +80,7 @@ Create a blocklist, then open **Schedules**. Enter a name, select the blocklist 
 
 Open **Time limits** to set maximum daily screen time allowances for specific games and desktop applications.
 
+- **One-Click App Selection**: An application dropdown allows selecting from discovered installed or running desktop programs, automatically populating the application name and executable path without manual input.
 - **Active Foreground Tracking**: FocusFence measures active usage by inspecting the focused foreground window (`GetForegroundWindow`) and matching its process image name via non-blocking Win32 APIs. Time accumulates only while the monitored application is actively in the foreground.
 - **5-Minute Warning**: When an application reaches 5 minutes of remaining allowance for the day, FocusFence emits a Windows tray warning notification so children have time to save games or wrap up tasks.
 - **Automatic Enforcement**: As soon as the daily allowance is exhausted, the application is automatically closed and blocked from running for the remainder of the day.
