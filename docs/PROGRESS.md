@@ -243,8 +243,23 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (91 checks), WPF UI Smoke (11 checks), AppLocker Policy (58 checks), Canonical Memory (16 records).
 
+### Milestone 17: SRP Detection Hardening & Policy Test Suite Expansion
+* **Date**: 2026-11-23
+* **Branch**: `feature/srp-detection-and-policy-hardening` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Hardened `Test-SrpConfigurationContent` and `Test-ExistingSrpConfiguration` in [PolicyDetection.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/Admin/PolicyDetection.ps1) (22 lines) to safely handle null dictionaries, empty or whitespace paths, and non-existent registry paths without throwing parameter binding exceptions.
+  - Expanded [Test-ManagedPolicy.ps1](file:///c:/Users/tannp/Documents/projects/window-manage/tests/Test-ManagedPolicy.ps1) (112 lines) with 5 new automated test assertions (**63 total policy tests**):
+    1. Null SRP dictionary handling returns false.
+    2. Multiple active SRP settings requiring administrator review are safely rejected.
+    3. Empty SRP path strings safely return false.
+    4. Whitespace SRP path strings safely return false.
+    5. Nonexistent registry paths safely return false.
+* **Line Budget Compliance**: All 67 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (91 checks), WPF UI Smoke (11 checks), AppLocker Policy (63 checks), Canonical Memory (17 records).
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (16 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (17 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

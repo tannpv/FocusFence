@@ -265,5 +265,20 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
     "tags": ["storage", "json-store", "time-limits", "validation-guards", "integration-tests", "line-budget"]
+  },
+  {
+    "id": "mem_017_srp_detection_and_policy_hardening",
+    "domain": "desktop/windows/focusfence",
+    "category": "security_infrastructure",
+    "title": "Milestone 17: SRP Detection Hardening & Policy Test Suite Expansion",
+    "timestamp": "2026-11-23T15:15:00Z",
+    "summary": "Hardened Test-SrpConfigurationContent and Test-ExistingSrpConfiguration in PolicyDetection.ps1 to safely handle null dictionaries, empty or whitespace paths, and non-existent registry paths without throwing unhandled parameter binding exceptions. Expanded Test-ManagedPolicy.ps1 with 5 new automated assertions (+5 checks, 63 total policy tests). 100% compliant across 67 files.",
+    "files_affected": [
+      "src/FocusFence.App/Admin/PolicyDetection.ps1",
+      "tests/Test-ManagedPolicy.ps1",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
+    "tags": ["applocker", "srp-detection", "policy-hardening", "powershell-testing", "line-budget"]
   }
 ]
