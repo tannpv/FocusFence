@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,7 @@ public partial class MainWindow : Window
     private bool polling;
     private bool wasBlocking;
     private bool initialized;
+    private int tickCount;
     private Blocklist? Selected => Lists.SelectedItem as Blocklist;
 
     public MainWindow(IStateStore store, IAppMonitor monitor, ITargetPolicy policy, IStartupRegistration? startup = null, bool background = false, IManagedAccountControl? managedAccount = null, IAppCatalog? catalog = null, IForegroundTracker? foreground = null)
@@ -70,6 +72,7 @@ public partial class MainWindow : Window
         Closing += OnClosing;
         Microsoft.Win32.SystemEvents.SessionSwitch += OnWindowsSessionSwitch;
         Closed += (_, _) => { timer.Stop(); tray.Dispose(); trayIcon.Dispose(); Microsoft.Win32.SystemEvents.SessionSwitch -= OnWindowsSessionSwitch; };
+        Pages.SelectionChanged += (_, _) => { if (Pages.SelectedItem is TabItem { Header: string h } && h.Contains("Time limits")) TimeLimits.Refresh(); };
         UpdateSession();
         UpdateAuthentication();
     }
@@ -246,28 +249,26 @@ public partial class MainWindow : Window
                 tray.ShowBalloonTip(Defaults.NotificationMilliseconds, "Scheduled focus", "Scheduled hours are active. Selected apps are being blocked.", Forms.ToolTipIcon.Info);
             wasBlocking = active is not null;
             UpdateSession();
-            var localApps = state.LocalDisabledApps.Where(a => policy.GetRejection(a.Path) is null).ToArray();
-            if (localApps.Length > 0)
-            {
-                var localErrors = await Task.Run(() => monitor.Block(localApps, DateTimeOffset.MaxValue));
-                if (localErrors.Count > 0) Status.Text = string.Join(" ", localErrors);
-            }
-            if (active is not null)
-            {
-                var errors = await Task.Run(() => monitor.Block(active.Apps, active.EndsAt));
-                if (errors.Count > 0) Status.Text = string.Join(" ", errors);
-            }
+            var targets = new List<AppTarget>();
+            targets.AddRange(state.LocalDisabledApps.Where(a => policy.GetRejection(a.Path) is null));
+            if (active is not null) targets.AddRange(active.Apps);
+
             timeLimits.RecordActiveTime(1);
             var limitEval = timeLimits.Evaluate();
             foreach (var warning in limitEval.Warnings)
                 tray.ShowBalloonTip(Defaults.NotificationMilliseconds, "Daily limit warning", $"{warning.Name} has 5 minutes remaining today.", Forms.ToolTipIcon.Warning);
-            var limitBlocked = limitEval.Blocked.Where(a => policy.GetRejection(a.Path) is null).ToArray();
-            if (limitBlocked.Length > 0)
+            targets.AddRange(limitEval.Blocked.Where(a => policy.GetRejection(a.Path) is null));
+
+            if (targets.Count > 0)
             {
-                var limitErrors = await Task.Run(() => monitor.Block(limitBlocked, DateTimeOffset.MaxValue));
-                if (limitErrors.Count > 0) Status.Text = string.Join(" ", limitErrors);
+                var distinct = targets.GroupBy(t => t.Path, StringComparer.OrdinalIgnoreCase).Select(g => g.First()).ToArray();
+                var errors = await Task.Run(() => monitor.Block(distinct, DateTimeOffset.MaxValue));
+                if (errors.Count > 0) Status.Text = string.Join(" ", errors);
             }
-            if (Pages.SelectedItem is TabItem { Header: string h } && h.Contains("Time limits"))
+
+            tickCount++;
+            if ((tickCount % 15 == 0 || limitEval.Warnings.Count > 0 || limitEval.Blocked.Count > 0) &&
+                Pages.SelectedItem is TabItem { Header: string h } && h.Contains("Time limits"))
                 TimeLimits.Refresh();
         }
         catch (Exception ex) { Status.Text = "Blocking needs attention: " + ex.Message; }
