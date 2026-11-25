@@ -258,8 +258,21 @@
 * **Comprehensive Verification**:
   - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (91 checks), WPF UI Smoke (11 checks), AppLocker Policy (63 checks), Canonical Memory (17 records).
 
+### Milestone 18: Game Launcher Discovery via MuiCache & Graceful Window Termination
+* **Date**: 2026-11-25
+* **Branch**: `feature/game-launcher-resolution-and-termination` (Merged via `--no-ff` into `main`)
+* **Achievements**:
+  - Diagnosed game screen time tracking root cause where games launched through wrappers (e.g. HoYoPlay `launcher.exe` launching `D:\Genshin Impact game\GenshinImpact.exe`, Steam, Epic) failed to track active time because Start Menu shortcuts pointed to the launcher wrapper rather than the child game process.
+  - Enhanced [WindowsAppCatalog.cs](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.Windows/WindowsAppCatalog.cs) (73 lines) with Windows Shell `MuiCache` extraction to automatically discover all user-launched game clients and executables with friendly names.
+  - Hardened [WindowsAppMonitor.cs](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.Windows/WindowsAppMonitor.cs) (96 lines) with `process.CloseMainWindow()` fallback when `process.Kill()` encounters `Win32Exception` on elevated or anti-cheat protected game processes.
+  - Added launcher detection guidance in [TimeLimitEditor.xaml.cs](file:///c:/Users/tannp/Documents/projects/window-manage/src/FocusFence.App/TimeLimitEditor.xaml.cs) (119 lines) advising users when a launcher wrapper is picked.
+  - Updated [Program.cs](file:///c:/Users/tannp/Documents/projects/window-manage/tests/FocusFence.Tests/Program.cs) (104 lines) with automated catalog discovery assertions (**93 total integration checks**, up from 91).
+* **Line Budget Compliance**: All 67 files strictly meet the $\le 120$ lines target (0 violations > 150, 0 warnings > 120).
+* **Comprehensive Verification**:
+  - `tools/Verify-AllGates.ps1`: **ALL 6 GATES PASSED (100% GREEN)** — Line Budgets (67 files), Build (6 projects), Integration Tests (93 checks), WPF UI Smoke (11 checks), AppLocker Policy (63 checks), Canonical Memory (18 records).
+
 ### Persistent Vector Memory & Contabo Milvus Sync
-* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (17 canonical milestone records).
+* **Store**: [scripts/memory/canonical_memories.json](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/canonical_memories.json) (18 canonical milestone records).
 * **Sync Tool**: [scripts/memory/milvus_sync.py](file:///c:/Users/tannp/Documents/projects/window-manage/scripts/memory/milvus_sync.py) (111 lines, Rule #1 compliant).
 * **Governing Specification**: Contabo Milvus Vector DB Sync Rule (`rule.database.milvus-contabo-sync`).
 * **Environment Contract**: `MILVUS_HOST`, `MILVUS_PORT`, `MILVUS_USER`, `MILVUS_PASSWORD`, `MILVUS_COLLECTION`.

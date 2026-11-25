@@ -280,5 +280,22 @@
     ],
     "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
     "tags": ["applocker", "srp-detection", "policy-hardening", "powershell-testing", "line-budget"]
+  },
+  {
+    "id": "mem_018_game_launcher_discovery_and_graceful_termination",
+    "domain": "desktop/windows/focusfence",
+    "category": "feature_enhancement",
+    "title": "Milestone 18: Game Launcher Discovery via MuiCache & Graceful Window Termination",
+    "timestamp": "2026-11-25T10:55:00Z",
+    "summary": "Resolved game screen time tracking gap where games launched via wrappers (e.g. HoYoPlay launcher.exe for Genshin Impact, Steam, Epic) failed to accumulate active time due to shortcut/wrapper mismatch. Enhanced WindowsAppCatalog.cs with Windows Shell MuiCache extraction to discover standalone game executables (such as D:\\Genshin Impact game\\GenshinImpact.exe). Hardened WindowsAppMonitor.cs with graceful CloseMainWindow fallback when Process.Kill encounters Win32Exception on elevated or anti-cheat protected processes. Added launcher selection guidance in TimeLimitEditor.xaml.cs. Expanded test suite to 93 checks.",
+    "files_affected": [
+      "src/FocusFence.Windows/WindowsAppCatalog.cs",
+      "src/FocusFence.Windows/WindowsAppMonitor.cs",
+      "src/FocusFence.App/TimeLimitEditor.xaml.cs",
+      "tests/FocusFence.Tests/Program.cs",
+      "docs/PROGRESS.md"
+    ],
+    "verification": "tools/Verify-AllGates.ps1: ALL 6 HARNESS QUALITY GATES PASSED (100% green)",
+    "tags": ["game-launchers", "muicache", "screen-time", "genshin-impact", "graceful-close", "line-budget"]
   }
 ]
