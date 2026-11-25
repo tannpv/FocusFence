@@ -62,13 +62,9 @@ try
 {
     StorageChecks.Run(Check, controller, state, clock, temp);
     var policy = new WindowsTargetPolicy();
-    if (args.Contains("--catalog"))
-    {
-        var discovered = new WindowsAppCatalog(new WindowsAppMonitor(policy), policy).Discover();
-        Check(discovered.Count > 0 && discovered.All(a => Path.IsPathFullyQualified(a.Path) && File.Exists(a.Path)), "Windows desktop catalog discovers existing executable paths without launching apps");
-        Check(discovered.Select(a => a.Path).Distinct(StringComparer.OrdinalIgnoreCase).Count() == discovered.Count, "Windows catalog merges duplicate executable entries");
-        Console.WriteLine($"Discovered {discovered.Count} desktop apps.");
-    }
+    var discovered = new WindowsAppCatalog(new WindowsAppMonitor(policy), policy).Discover();
+    Check(discovered.Count > 0 && discovered.All(a => Path.IsPathFullyQualified(a.Path) && File.Exists(a.Path)), "Windows desktop catalog discovers existing executable paths without launching apps");
+    Check(discovered.Select(a => a.Path).Distinct(StringComparer.OrdinalIgnoreCase).Count() == discovered.Count, "Windows catalog merges duplicate executable entries");
     Check(policy.GetRejection(Environment.ProcessPath!) is not null, "Blocker executable protected");
     Check(policy.GetRejection(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe")) is not null, "Windows executables protected");
     Check(policy.GetRejection("relative.exe") is not null, "Relative executable paths rejected");

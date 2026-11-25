@@ -58,7 +58,13 @@ public sealed class WindowsAppMonitor(ITargetPolicy policy) : IAppMonitor
                     if (!names.Contains(name) || process.Id == Environment.ProcessId || process.SessionId != sessionId) continue;
                     var path = GetExecutablePath(process);
                     if (DateTimeOffset.UtcNow < endsAt && path is not null && allowed.Any(t => string.Equals(t.Path, path, StringComparison.OrdinalIgnoreCase)))
-                        process.Kill();
+                    {
+                        try { process.Kill(); }
+                        catch (Win32Exception)
+                        {
+                            if (!process.CloseMainWindow()) throw;
+                        }
+                    }
                 }
                 catch (Win32Exception) { if (names.Contains(name)) errors.Add($"Cannot inspect or close {name}: Windows denied access."); }
                 catch (InvalidOperationException) { /* Process exited between enumeration and inspection. */ }
