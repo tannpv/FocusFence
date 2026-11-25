@@ -110,9 +110,8 @@ public partial class MainWindow : Window
             }
 
             tickCount++;
-            if ((tickCount % 15 == 0 || limitEval.Warnings.Count > 0 || limitEval.Blocked.Count > 0) &&
-                Pages.SelectedItem is TabItem { Header: string h } && h.Contains("Time limits"))
-                TimeLimits.Refresh();
+            if (tickCount % 60 == 0 || limitEval.Warnings.Count > 0 || limitEval.Blocked.Count > 0) Save();
+            if ((tickCount % 15 == 0 || limitEval.Warnings.Count > 0 || limitEval.Blocked.Count > 0) && Pages.SelectedItem is TabItem { Header: string h } && h.Contains("Time limits")) TimeLimits.Refresh();
         }
         catch (Exception ex) { Status.Text = "Blocking needs attention: " + ex.Message; }
         finally { polling = false; }
