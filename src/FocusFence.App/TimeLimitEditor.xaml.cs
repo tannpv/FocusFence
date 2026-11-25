@@ -36,11 +36,11 @@ public partial class TimeLimitEditor : UserControl
 
     private void OnAppPicked(object sender, SelectionChangedEventArgs e)
     {
-        if (AppPicker.SelectedItem is CatalogApp app)
-        {
-            LimitName.Text = app.Name; LimitPath.Text = app.Path;
-            if (string.IsNullOrWhiteSpace(LimitMinutes.Text)) LimitMinutes.Text = "60";
-        }
+        if (AppPicker.SelectedItem is not CatalogApp app) return;
+        LimitName.Text = app.Name; LimitPath.Text = app.Path;
+        if (string.IsNullOrWhiteSpace(LimitMinutes.Text)) LimitMinutes.Text = "60";
+        if (app.Path.EndsWith("launcher.exe", StringComparison.OrdinalIgnoreCase) || app.Path.EndsWith("hyp.exe", StringComparison.OrdinalIgnoreCase))
+            status("Note: Launchers may start separate games. If time is not tracked, select the game .exe directly.");
     }
 
     public void Refresh()

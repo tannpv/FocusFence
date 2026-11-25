@@ -19,6 +19,17 @@ public sealed class WindowsAppCatalog(IAppMonitor monitor, ITargetPolicy policy)
             apps.Add(new(name, path, source, policy.GetRejection(path)));
         }
         foreach (var app in monitor.GetRunningApps()) Add(app.Name, app.Path, "Running app");
+        using (var mui = Registry.CurrentUser.OpenSubKey(@"Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\MuiCache"))
+        {
+            if (mui is not null)
+                foreach (var val in mui.GetValueNames())
+                {
+                    if (!val.EndsWith(".FriendlyAppName", StringComparison.OrdinalIgnoreCase)) continue;
+                    var exePath = val[..^16];
+                    var friendlyName = mui.GetValue(val) as string;
+                    Add(string.IsNullOrWhiteSpace(friendlyName) ? Path.GetFileNameWithoutExtension(exePath) : friendlyName, exePath, "User application");
+                }
+        }
         foreach (var hive in new[] { RegistryHive.LocalMachine, RegistryHive.CurrentUser })
         foreach (var view in new[] { RegistryView.Registry64, RegistryView.Registry32 })
         {
